@@ -15,7 +15,7 @@ class source:
 	def __init__(self):
 		self.scrape_provider = 'rd_cloud'
 		self.sources = []
-	
+
 	def results(self, info):
 		try:
 			if not enabled_debrids_check('rd'): return internal_results(self.scrape_provider, self.sources)
@@ -37,25 +37,9 @@ class source:
 						file_dl, size = item['url_link'], round(float(item['bytes'])/1073741824, 2)
 						direct_debrid_link = item.get('direct_debrid_link', False)
 						video_quality, details = get_file_info(name_info=release_info_format(file_name))
-						source_item = {
-							'name': file_name,
-							'display_name': display_name,
-							'quality': video_quality,
-							'size': size,
-							'size_label': '%.2f GB' % size,
-							'extraInfo': details,
-							'url_dl': file_dl,
-							'id': file_dl,
-							'downloads': False,
-							'direct': True,
-							'source': self.scrape_provider,
-							'scrape_provider': self.scrape_provider,
-							'direct_debrid_link': direct_debrid_link,
-							# === CHANGE: Include pack info in the source item ===
-							'delete_id': item.get('delete_id', None),  # Add pack info if available
-							'dl_id': item.get('dl_id', None) #Add info for downloads
-							# === END CHANGE ===
-						}
+						source_item = {'name': file_name, 'display_name': display_name, 'quality': video_quality, 'size': size, 'size_label': '%.2f GB' % size,
+									'extraInfo': details, 'url_dl': file_dl, 'id': file_dl, 'downloads': False, 'direct': True, 'source': self.scrape_provider,
+									'scrape_provider': self.scrape_provider, 'direct_debrid_link': direct_debrid_link, 'delete_id': item.get('delete_id', None), 'dl_id': item.get('dl_id', None)}
 						yield source_item
 					except: pass
 			self.sources = list(_process())
