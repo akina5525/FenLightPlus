@@ -59,7 +59,9 @@ def rd_downloads():
 				url_params = {'mode': 'playback.video', 'url': url_link, 'obj': 'video'}
 				down_file_params = {'mode': 'downloader.runner', 'name': name, 'url': url_link, 'action': 'cloud.realdebrid_direct', 'image': default_rd_icon}
 				delete_params = {'mode': 'real_debrid.delete', 'id': item['id'], 'cache_type': 'download'}
-				cm_append(('[B]Download File[/B]','RunPlugin(%s)' % build_url(down_file_params)))
+				for key, value in item.items():
+					cm_append((f"{key} - {value}", ''))
+				cm_append(('[B]Downloa_File[/B]','RunPlugin(%s)' % build_url(down_file_params)))
 				cm_append(('[B]Delete File[/B]','RunPlugin(%s)' % build_url(delete_params)))
 				url = build_url(url_params)
 				listitem = make_listitem()
