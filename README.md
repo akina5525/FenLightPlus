@@ -1,21 +1,25 @@
-`2.0.07` is the latest and last release of Fen Light.
+I'm jokingly called this FenLight+. There was always 1 thing I wished Fen could do that it couldn't and that was delete RD Cloud files from the results screen so that I didn't have to go into My Services everytime I accidently added a bad package to the cloud. Now it can. 
 
-For the love of God, please don't open any issues for bugs for this release. I need this thing finished with.
+This is the first Kodi addon I've ever edited so Tikipeter would probably shed a tear at how I butchered his code. I might keep working to improve this, I might not.
 
-Thank you.
+<h2>To Update From FenLight</h2>
 
+In Kodi, go to Addons, open Fen Light -> Tools -> Settings -> General -> scroll down to 'Manage Addon Updates' and change these two fields:
 
+<b>Github Username:</b> thejason40<br />
+<b>Github Repo Address:</b> thejason40.github.io
 
-I have the final version of fen  `2.0.07` version before Tiki removed the repo. 
-You can install this version (which works with Torbox and Real Debrid) 
+Now go back to the Tools menu, and select Update Utilities -> Check For Updates
 
-You will need cocoscrapers module for external scrapers
-
+<h2>To Install Fresh</h2>
 
 Go to Kodi -> File Manager -> Add Source -> add
 
-`https://minicoz.github.io/packages`
+`https://thejason40.github.io/packages`
 
-call it "FenM"
+call it "FenPlus"
 
-Then go to Kodi -> Settings -> Add Ons -> Install from Zip -> FenM -> Install fen light 2.0.07.
+Then go to Kodi -> Settings -> Add Ons -> Install from Zip -> FenPlus -> Install FenLight+ 2.0.08.
+
+<hr>
+<i>Full credit to Tikipeter for creating Fen and FenLight. Thanks to minicoz for forking Tiki's repository before it was taken down.</i>
