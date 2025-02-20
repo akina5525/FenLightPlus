@@ -1,4 +1,5 @@
 I'm jokingly called this FenLight+. There was always 1 thing I wished Fen could do that it couldn't and that was delete RD Cloud files from the results screen so that I didn't have to go into My Services everytime I accidently added a bad package to the cloud. Now it can. 
+In version 2.0.09 I've also added an option to unmark previous episode as watched in Next Episodes list and re-enabled 'Rollback to Previous Version' option that Tikipeter included in older versions of FenLight.
 
 This is the first Kodi addon I've ever edited so Tikipeter would probably shed a tear at how I butchered his code. I might keep working to improve this, I might not.
 
