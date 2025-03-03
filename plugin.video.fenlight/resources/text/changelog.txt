@@ -1,5 +1,9 @@
+[COLOR dodgerblue][B]Version 2.1.0[/B][/COLOR]
+- Added 'Play # episodes' option to play a set number of episodes. After that, your default autoplay settings will take over.
+- Removed future years from collections. These are now generated based on the current date to future-proof.
+
 [COLOR dodgerblue][B]Version 2.0.10[/B][/COLOR]
-- Possible fix for name matching on TorBox
+- Fix for name matching on TorBox
 
 [COLOR dodgerblue][B]Version 2.0.09[/B][/COLOR]
 - Added option to unmark previous episode as watched in Next Episodes list
