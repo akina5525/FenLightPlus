@@ -23,7 +23,7 @@ special = ('tmdb_tv_languages', 'tmdb_tv_networks', 'tmdb_tv_providers', 'tmdb_t
 'tmdb_anime_providers', 'tmdb_anime_search')
 personal = {'in_progress_tvshows': ('modules.watched_status', 'get_in_progress_tvshows'), 'favorites_tvshows': ('modules.favorites', 'get_favorites'),
 'favorites_anime_tvshows': ('modules.favorites', 'get_favorites'), 'watched_tvshows': ('modules.watched_status', 'get_watched_items')}
-trakt_main = ('trakt_tv_trending', 'trakt_tv_trending_recent', 'trakt_tv_most_watched', 'trakt_tv_most_favorited',
+trakt_main = ('trakt_tv_trending', 'trakt_tv_trending_recent', 'trakt_tv_trending_uk', 'trakt_tv_trending_recent_uk', 'trakt_tv_most_watched', 'trakt_tv_most_favorited',
 'trakt_anime_trending', 'trakt_anime_trending_recent', 'trakt_anime_most_watched', 'trakt_anime_most_favorited')
 trakt_special = ('trakt_tv_certifications', 'trakt_anime_certifications')
 trakt_personal = ('trakt_collection', 'trakt_watchlist', 'trakt_collection_lists', 'trakt_watchlist_lists', 'trakt_favorites')

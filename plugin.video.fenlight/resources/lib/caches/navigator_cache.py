@@ -33,7 +33,9 @@ root_list = [
 
 movie_list = [
 {'name': 'Trending', 'mode': 'build_movie_list', 'action': 'trakt_movies_trending', 'random_support': 'true', 'iconImage': 'trending'},
-{'name': 'Trending Recent', 'mode': 'build_movie_list', 'action': 'trakt_movies_trending_recent', 'random_support': 'true', 'iconImage': 'trending_recent'},
+{'name': 'Trending UK', 'mode': 'build_movie_list', 'action': 'trakt_movies_trending_uk', 'random_support': 'true', 'iconImage': 'trending'},
+{'name': 'Trending Recent', 'mode': 'build_movie_list', 'action': 'trakt_movies_trending_recent', 'iconImage': 'trending_recent'},
+{'name': 'Trending Recent UK', 'mode': 'build_movie_list', 'action': 'trakt_movies_trending_recent_uk', 'iconImage': 'trending_recent'},
 {'name': 'Popular', 'mode': 'build_movie_list', 'action': 'tmdb_movies_popular', 'random_support': 'true', 'iconImage': 'popular'},
 {'name': 'Popular Today', 'mode': 'build_movie_list', 'action': 'tmdb_movies_popular_today', 'random_support': 'true', 'iconImage': 'popular_today'},
 {'name': 'Premieres', 'mode': 'build_movie_list', 'action': 'tmdb_movies_premieres', 'random_support': 'true', 'iconImage': 'fresh'},
@@ -60,7 +62,9 @@ movie_list = [
 
 tvshow_list = [
 {'name': 'Trending', 'mode': 'build_tvshow_list', 'action': 'trakt_tv_trending', 'random_support': 'true', 'iconImage': 'trending'},
+{'name': 'Trending UK', 'mode': 'build_tvshow_list', 'action': 'trakt_tv_trending_uk', 'iconImage': 'trending'},
 {'name': 'Trending Recent', 'mode': 'build_tvshow_list', 'action': 'trakt_tv_trending_recent', 'random_support': 'true', 'iconImage': 'trending_recent'},
+{'name': 'Trending Recent UK', 'mode': 'build_tvshow_list', 'action': 'trakt_tv_trending_recent_uk', 'iconImage': 'trending_recent'},
 {'name': 'Popular', 'mode': 'build_tvshow_list', 'action': 'tmdb_tv_popular', 'random_support': 'true', 'iconImage': 'popular'},
 {'name': 'Popular Today', 'mode': 'build_tvshow_list', 'action': 'tmdb_tv_popular_today', 'random_support': 'true', 'iconImage': 'popular_today'},
 {'name': 'Premieres', 'mode': 'build_tvshow_list', 'action': 'tmdb_tv_premieres', 'random_support': 'true', 'iconImage': 'fresh'},
