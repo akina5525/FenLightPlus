@@ -882,6 +882,16 @@ content_settings = '\
 \n                        <property name="setting_description">Choose the order in which Real Debrid results appear in relation to any other active accounts. The lower the number, the higher the sort order</property>\
 \n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_numeric&amp;setting_id=rd.priority)</onclick>\
 \n                    </item>\
+\n                    <item>\
+\n                        <visible>Container(2000).HasFocus(50)</visible>\
+\n                        <visible>!String.IsEqual(Window(10000).Property(fenlight.rd.token),empty_setting)</visible>\
+\n                        <visible>String.IsEqual(Window(10000).Property(fenlight.rd.enabled),true)</visible>\
+\n                        <property name="setting_label">Alternative API URL</property>\
+\n                        <property name="setting_type">boolean</property>\
+\n                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.rd.alt_api)]</property>\
+\n                        <property name="setting_description">Use alternative URL for the RD API. Useful if api.real-debrid.com is blocked.</property>\
+\n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_boolean&amp;setting_id=rd.alt_api)</onclick>\
+\n                    </item>\
 \n            <!-- Premiumize -->\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(50)</visible>\
