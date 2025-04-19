@@ -126,6 +126,8 @@ class Movies:
 			meta = movie_meta(self.id_type, _id, self.tmdb_api_key, self.mpaa_region, self.current_date, self.current_time)
 			if not meta or 'blank_entry' in meta: return
 			listitem = make_listitem()
+			tmdb_active = settings.tmdb_user_active()
+			my_tmdb_list = _id.get('my_tmdb_list', '') if isinstance(_id, dict) else ''
 			cm = []
 			cm_append = cm.append
 			set_properties = listitem.setProperties
@@ -167,6 +169,12 @@ class Movies:
 							build_url({'mode': 'trakt.list.get_trakt_lists_with_media', 'media_type': 'movie', 'imdb_id': imdb_id, 'category_name': '%s In Trakt Lists' % title})))
 			cm_append(('[B]Trakt Lists Manager[/B]', run_plugin % \
 				build_url({'mode': 'trakt_manager_choice', 'tmdb_id': tmdb_id, 'imdb_id': imdb_id, 'tvdb_id': 'None', 'media_type': 'movie', 'icon': poster})))
+			if tmdb_active:
+				cm_append(('[B]TMDB Lists Manager[/B]', run_plugin % \
+				build_url({'mode': 'tmdb_manager_choice', 'media_type': 'movie', 'title': title, 'tmdb_id': tmdb_id, 'imdb_id': imdb_id, 'tvdb_id': 'None', 'media_type': 'movie', 'icon': poster})))
+			if not my_tmdb_list == '':
+				cm_append(('[B]Use as TMDB List Image[/B]', run_plugin % \
+				build_url({'mode': 'tmdb.set_backdrop', 'backdrop_url': meta_get('fanart'), 'list_id': my_tmdb_list})))
 			cm_append(('[B]Favorites Manager[/B]', run_plugin % \
 				build_url({'mode': 'favorites_choice', 'media_type': 'movie', 'tmdb_id': tmdb_id, 'title': title})))
 			if playcount:

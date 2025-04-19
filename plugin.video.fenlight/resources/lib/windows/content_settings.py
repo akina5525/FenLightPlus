@@ -49,7 +49,7 @@ content_settings = '\
 \n                    </item>\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(10)</visible>\
-\n                        <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),fenlight_fanart2.jpg)</visible>\
+\n                        <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),flpfa.jpg)</visible>\
 \n                        <property name="setting_label">    - Restore Default Background Image</property>\
 \n                        <property name="setting_type">action</property>\
 \n                        <property name="setting_value">...</property>\
@@ -705,16 +705,15 @@ content_settings = '\
 \n            <!-- TMDb -->\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(50)</visible>\
-\n                        <property name="setting_label">TMDb</property>\
+\n                        <property name="setting_label">TMDB</property>\
 \n                        <property name="setting_type">separator</property>\
 \n                        <onclick>noop</onclick>\
-\n                    </item>\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(50)</visible>\
-\n                        <property name="setting_label">API Key</property>\
+\n                        <property name="setting_label">Read API Key</property>\
 \n                        <property name="setting_type">numeric</property>\
 \n                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.tmdb_api)]</property>\
-\n                        <property name="setting_description">Enter here your TMDb API key</property>\
+\n                        <property name="setting_description">Enter your TMDb Read Access API key</property>\
 \n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=tmdb_api)</onclick>\
 \n                    </item>\
 \n                    <item>\
@@ -733,6 +732,31 @@ content_settings = '\
 \n                        <property name="setting_value">...</property>\
 \n                        <property name="setting_description">Test if your TMDb API is activated and working</property>\
 \n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb_api_check_choice)</onclick>\
+\n                    </item>\
+\n            <!-- TMDb Lists -->\
+\n                    <item>\
+\n                        <visible>Container(2000).HasFocus(50)</visible>\
+\n                        <property name="setting_label">TMDB Lists</property>\
+\n                        <property name="setting_type">separator</property>\
+\n                        <onclick>noop</onclick>\
+\n                    </item>\
+\n                        <item>\
+\n                        <visible>Container(2000).HasFocus(50)</visible>\
+\n                        <visible>String.IsEqual(Window(10000).Property(fenlight.tmdb.access_token),empty_setting)</visible>\
+\n                        <property name="setting_label">Authorize</property>\
+\n                        <property name="setting_type">action</property>\
+\n                        <property name="setting_value">...</property>\
+\n                        <property name="setting_description">Authorize your TMDB account and use it within Fen Light+</property>\
+\n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb.authenticate)</onclick>\
+\n                    </item>\
+\n                    <item>\
+\n                        <visible>Container(2000).HasFocus(50)</visible>\
+\n                        <visible>!String.IsEqual(Window(10000).Property(fenlight.tmdb.access_token),empty_setting)</visible>\
+\n                        <property name="setting_label">Revoke Authorization</property>\
+\n                        <property name="setting_type">action</property>\
+\n                        <property name="setting_value">...</property>\
+\n                        <property name="setting_description">Revoke authorization of your TMDb account</property>\
+\n                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb.deauth)</onclick>\
 \n                    </item>\
 \n            <!-- OMDb -->\
 \n                    <item>\

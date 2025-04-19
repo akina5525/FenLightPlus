@@ -86,6 +86,7 @@ def get_trakt_lists(params):
 					display = '%s [I](x%s)[/I]' % (list_name_upper, str(item_count))
 					cm_append(('[B]Make New List[/B]', 'RunPlugin(%s)' % build_url({'mode': 'trakt.make_new_trakt_list'})))
 					cm_append(('[B]Delete List[/B]', 'RunPlugin(%s)' % build_url({'mode': 'trakt.delete_trakt_list', 'user': user, 'list_slug': slug})))
+				cm_append(('[B]Import to TMDB List[/B]', 'RunPlugin(%s)' % build_url({'mode': 'trakt_trakt_to_tmdb_choice', 'user': user, 'list_slug': slug, 'list_type': list_type, 'list_name': list_name})))
 				listitem = make_listitem()
 				listitem.setLabel(display)
 				listitem.setArt({'icon': trakt_icon, 'poster': trakt_icon, 'thumb': trakt_icon, 'fanart': fanart, 'banner': fanart})

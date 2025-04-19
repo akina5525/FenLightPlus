@@ -28,7 +28,7 @@ empty_setting_check = (None, 'empty_setting', '')
 standby_date = '2050-01-01T01:00:00.000Z'
 res_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 API_ENDPOINT = 'https://api.trakt.tv/%s'
-timeout = 20
+timeout = 60
 EXPIRY_1_DAY, EXPIRY_1_WEEK = 24, 168
 
 def no_client_key():

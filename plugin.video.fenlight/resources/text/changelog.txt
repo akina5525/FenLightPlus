@@ -1,3 +1,9 @@
+[COLOR dodgerblue][B]Version 2.2.00[/B][/COLOR]
+- Added TMDB List Support
+	- Lists can be imported from Trakt - large lists will take a long time, lists are seperated into 100 item chunks to bypass TMDBs 30 second timeout.
+	- Set the list image from within the list.
+	- If list is updated from TMDB website, clear list cache from context menus.
+
 [COLOR dodgerblue][B]Version 2.1.20[/B][/COLOR]
 - Added alternative Real Debrid API option for if the main API URL is blocked.
 

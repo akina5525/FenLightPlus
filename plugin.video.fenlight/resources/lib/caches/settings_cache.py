@@ -297,6 +297,9 @@ default_settings = [
 {'setting_id': 'trakt.secret', 'setting_type': 'string', 'setting_default': trakt_default_secret},
 #==================== TMDb
 {'setting_id': 'tmdb_api', 'setting_type': 'string', 'setting_default': tmdb_default_api},
+{'setting_id': 'tmdb_read_access_token', 'setting_type': 'string', 'setting_default': 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZTRkNDhlNjhhYmI5YTRmMmM4NmExY2MxNDNjZDhiNSIsIm5iZiI6MTY5OTAwNzUyNy42OTQwMDAyLCJzdWIiOiI2NTQ0Y2MyNzQxYTU2MTMzNjkzOTkwMjMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.qsT2zyh3yRDVSyu2aboWEq4rxuz5WjZsABxJ7lb2-po'},
+{'setting_id': 'tmdb.access_token', 'setting_type': 'string', 'setting_default': 'empty_setting'},
+{'setting_id': 'tmdb.account_id', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 #==================== OMDb
 {'setting_id': 'omdb_api', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 #==================== External

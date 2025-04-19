@@ -260,17 +260,13 @@ def clear_icons():
     databasePath = xbmcvfs.translatePath('special://profile/Database/')
     addonPath = xbmcvfs.translatePath('special://home/addons')
     
-    kodi_utils.logger('thumbnailsPath', thumbnailsPath)
-    kodi_utils.logger('databasePath', databasePath)
-    kodi_utils.logger('addonPath', addonPath)
-    
     try:
         dbcon = sqlite3.connect(databasePath+'/Textures13.db')
         dbcur = dbcon.cursor()
         
         # Get the cached paths
         icon = dbcur.execute("SELECT cachedurl FROM texture WHERE url ='" + addonPath + "/plugin.video.fenlight/resources/media/fenlight_icon.png';").fetchone()
-        fanart = dbcur.execute("SELECT cachedurl FROM texture WHERE url ='" + addonPath + "/plugin.video.fenlight/resources/media/fenlight_fanart2.jpg';").fetchone()
+        fanart = dbcur.execute("SELECT cachedurl FROM texture WHERE url ='" + addonPath + "/plugin.video.fenlight/resources/media/flpfa.jpg';").fetchone()
         
         if icon is not None:
             if xbmcvfs.exists(thumbnailsPath + icon[0]):
@@ -280,7 +276,7 @@ def clear_icons():
         if fanart is not None:
             if xbmcvfs.exists(thumbnailsPath + fanart[0]):
                 xbmcvfs.delete(thumbnailsPath + fanart[0])
-            dbcur.execute("DELETE FROM texture WHERE url ='" + addonPath + "/plugin.video.fenlight/resources/media/fenlight_fanart2.jpg';")
+            dbcur.execute("DELETE FROM texture WHERE url ='" + addonPath + "/plugin.video.fenlight/resources/media/flpfa.jpg';")
         
         # Commit changes before closing the connection
         dbcon.commit()

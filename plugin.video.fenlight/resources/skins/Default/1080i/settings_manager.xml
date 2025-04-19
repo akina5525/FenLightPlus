@@ -433,12 +433,12 @@
                           <property name="setting_label">Assign Addon Background Image</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.default_addon_fanart)]</property>
-                          <property name="setting_description">Choose any custom background you would like to use within Fen Light</property>
+                          <property name="setting_description">Choose any custom background you would like to use within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_path&amp;setting_id=default_addon_fanart)</onclick>
                       </item>
                       <item>
                           <visible>Container(2000).HasFocus(10)</visible>
-                          <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),fenlight_fanart2.jpg)</visible>
+                          <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),flpfa.jpg)</visible>
                           <property name="setting_label">    - Restore Default Background Image</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
@@ -517,7 +517,7 @@
                           <property name="setting_label">Watched Status Provider</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.watched_indicators_name)]</property>
-                          <property name="setting_description">Choose the provider that keeps track of the Movies and Episodes you have watched within Fen Light. Options are the built in method of Fen Light+ or your Trakt account</property>
+                          <property name="setting_description">Choose the provider that keeps track of the Movies and Episodes you have watched within Fen Light+. Options are the built in method of Fen Light+ or your Trakt account</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_from_list&amp;setting_id=watched_indicators)</onclick>
                       </item>
         <!-- Trakt Cache -->
@@ -652,7 +652,7 @@
                           <property name="setting_label">Movies</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.media_open_action_movie_name)]</property>
-                          <property name="setting_description">Choose the Open Action when a Movie is selected in Fen Light. Choices Are None, Open Extras, Open Movie Set, Both. "Both" will open the Movie Set if available or open Extras</property>
+                          <property name="setting_description">Choose the Open Action when a Movie is selected in Fen Light+. Choices Are None, Open Extras, Open Movie Set, Both. "Both" will open the Movie Set if available or open Extras</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_from_list&amp;setting_id=media_open_action_movie)</onclick>
                       </item>
                       <item>
@@ -660,7 +660,7 @@
                           <property name="setting_label">TV Shows</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.media_open_action_tvshow_name)]</property>
-                          <property name="setting_description">Choose the Open Action when a TV Show is selected in Fen Light. Choices Are None or Open Extras</property>
+                          <property name="setting_description">Choose the Open Action when a TV Show is selected in Fen Light+. Choices Are None or Open Extras</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_from_list&amp;setting_id=media_open_action_tvshow)</onclick>
                       </item>
 <!-- CONTENT 30 -->
@@ -766,7 +766,7 @@
                           <property name="setting_label">    - Addon Item Limit</property>
                           <property name="setting_type">numeric</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.paginate.limit_addon)]</property>
-                          <property name="setting_description">Choose the limit of pagination when within Fen Light</property>
+                          <property name="setting_description">Choose the limit of pagination when within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_numeric&amp;setting_id=paginate.limit_addon)</onclick>
                       </item>
                       <item>
@@ -1087,7 +1087,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your Trakt account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your Trakt account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=trakt.trakt_authenticate)</onclick>
                       </item>
                       <item>
@@ -1136,7 +1136,7 @@
         <!-- TMDb -->
                       <item>
                           <visible>Container(2000).HasFocus(50)</visible>
-                          <property name="setting_label">TMDb</property>
+                          <property name="setting_label">TMDB</property>
                           <property name="setting_type">separator</property>
                           <onclick>noop</onclick>
                       </item>
@@ -1165,6 +1165,31 @@
                           <property name="setting_description">Test if your TMDb API is activated and working</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb_api_check_choice)</onclick>
                       </item>
+        <!-- TMDb Lists -->
+                      <item>
+                          <visible>Container(2000).HasFocus(50)</visible>
+                          <property name="setting_label">TMDB Lists</property>
+                          <property name="setting_type">separator</property>
+                          <onclick>noop</onclick>
+                      </item>
+					  <item>
+                          <visible>Container(2000).HasFocus(50)</visible>
+                          <visible>String.IsEqual(Window(10000).Property(fenlight.tmdb.access_token),empty_setting)</visible>
+                          <property name="setting_label">Authorize</property>
+                          <property name="setting_type">action</property>
+                          <property name="setting_value">...</property>
+                          <property name="setting_description">Authorize your TMDB account and use it within Fen Light+</property>
+                          <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb.authenticate)</onclick>
+                      </item>
+					  <item>
+                          <visible>Container(2000).HasFocus(50)</visible>
+                          <visible>!String.IsEqual(Window(10000).Property(fenlight.tmdb.access_token),empty_setting)</visible>
+                          <property name="setting_label">Revoke Authorization</property>
+                          <property name="setting_type">action</property>
+                          <property name="setting_value">...</property>
+                          <property name="setting_description">Revoke authorization of your TMDB account</property>
+                          <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=tmdb.deauth)</onclick>
+                      </item>
         <!-- OMDb -->
                       <item>
                           <visible>Container(2000).HasFocus(50)</visible>
@@ -1192,7 +1217,7 @@
                           <property name="setting_label">Enable</property>
                           <property name="setting_type">boolean</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.provider.external)]</property>
-                          <property name="setting_description">Enable this to use external scrapers. No support is provided when you choose to use external scrapers within Fen Light</property>
+                          <property name="setting_description">Enable this to use external scrapers. No support is provided when you choose to use external scrapers within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_boolean&amp;setting_id=provider.external)</onclick>
                       </item>
                       <item>
@@ -1201,7 +1226,7 @@
                           <property name="setting_label">Choose External Scrapers Module</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.external_scraper.name)]</property>
-                          <property name="setting_description">Choose the external scraper module to use within Fen Light. No support is provided when you choose to use external scrapers within Fen Light</property>
+                          <property name="setting_description">Choose the external scraper module to use within Fen Light+. No support is provided when you choose to use external scrapers within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=external_scraper_choice)</onclick>
                       </item>
                       <item>
@@ -1228,7 +1253,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your Real Debrid account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your Real Debrid account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=real_debrid.authenticate)</onclick>
                       </item>
                       <item>
@@ -1336,7 +1361,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your Premiumize account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your Premiumize account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=premiumize.authenticate)</onclick>
                       </item>
                       <item>
@@ -1434,7 +1459,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your All Debrid account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your All Debrid account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=alldebrid.authenticate)</onclick>
                       </item>
                       <item>
@@ -1532,7 +1557,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your Off Cloud account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your Off Cloud account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=offcloud.authenticate)</onclick>
                       </item>
                       <item>
@@ -1630,7 +1655,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your Easy Debrid account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your Easy Debrid account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=easydebrid.authenticate)</onclick>
                       </item>
                       <item>
@@ -1675,7 +1700,7 @@
                           <property name="setting_label">Authorize</property>
                           <property name="setting_type">action</property>
                           <property name="setting_value">...</property>
-                          <property name="setting_description">Authorize your TorBox account and use it within Fen Light</property>
+                          <property name="setting_description">Authorize your TorBox account and use it within Fen Light+</property>
                           <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=torbox.authenticate)</onclick>
                       </item>
                       <item>

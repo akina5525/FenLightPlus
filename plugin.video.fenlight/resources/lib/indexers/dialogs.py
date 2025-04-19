@@ -180,6 +180,105 @@ def trakt_manager_choice(params):
 	if choice == 'Add': trakt_api.trakt_add_to_list(params)
 	else: trakt_api.trakt_remove_from_list(params)
 
+def trakt_trakt_to_tmdb_choice(params, choices = []):
+	if not trakt_user_active(): return notification('No Active Trakt Account', 3000)
+	icon = params.get('icon', None) or get_icon('trakt')
+	if choices == []:
+		from apis.tmdb_api import get_lists
+		lists = get_lists('my_lists')
+		choices.append(('New TMDB List...', 'new'))
+		for i in lists:
+			choices.append((i['name'], { 'id': i['id'], 'name': i['name'] }))
+	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
+	kwargs = {'items': json.dumps(list_items), 'heading': 'Import Trakt to TMDB'}
+	choice = select_dialog([i[1] for i in choices], **kwargs)
+	if choice == None: return
+	elif choice == 'new':
+		from apis.tmdb_api import new_tmdb_list
+		new_list = new_tmdb_list(default_text = params.get('list_name'))
+		tmdb_name, tmdb_id = new_list.get('list_title'), new_list.get('list_id')
+	else:
+		tmdb_name, tmdb_id = choice.get('name'), choice.get('id')
+	trakt_list_slug, trakt_list_type, trakt_list_user = params.get('list_slug'), params.get('list_type'), params.get('user')
+	trakt_params = { 'list_type': trakt_list_type, 'user': trakt_list_user, 'ids': { 'slug': trakt_list_slug } }
+	from apis.tmdb_api import trakt_to_tmdb
+	return trakt_to_tmdb(trakt_params, tmdb_id, tmdb_name, confirm = False)
+
+def tmdb_trakt_to_tmdb_choice(params, choices = []):
+	if not trakt_user_active(): return notification('No Active Trakt Account', 3000)
+	icon = params.get('icon', None) or get_icon('trakt')
+	if choices == []:
+		choices = [
+		('Trakt Collection', 'collection'),
+		('Trakt Watchlist', 'watchlist'),
+		('Trakt My Lists', 'my_lists'),
+		('Trakt Liked Lists', 'liked_lists'),
+		('Trakt Favorites', 'favorites')
+		]
+	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
+	kwargs = {'items': json.dumps(list_items), 'heading': 'Import Trakt to TMDB'}
+	choice = select_dialog([i[1] for i in choices], **kwargs)
+	if choice == None: return
+	if choice == 'collection':
+		choices = [
+		('Collection - Movies', '_collection_movies'),
+		('Collection - TV Shows', '_collection_tv')
+		]
+	elif choice == 'watchlist':
+		choices = [
+		('Watchlist - Movies', '_watchlist_movies'),
+		('Watchlist - TV Shows', '_watchlist_tv')
+		]
+	elif '_lists' in choice:
+		choices = []
+		list_type = choice
+		from apis.trakt_api import trakt_get_lists
+		lists = trakt_get_lists(choice)
+		if list_type == 'liked_lists':
+			for i in lists:
+				choices.append((i['list']['name'], {'user': i['list']['user']['username'], 'list_type': list_type, 'ids': i['list']['ids'] }))	
+		else:
+			for i in lists:
+				choices.append((i['name'], {'user': i['user']['username'], 'list_type': list_type, 'ids': i['ids'] }))
+	elif choice == 'favorites':
+		choices = [
+		('Favorites - Movies', '_favorites_movies'),
+		('Favorites - TV Shows', '_favorites_tv')
+		]
+	if not isinstance(choice, str):
+		from apis.tmdb_api import trakt_to_tmdb
+		return trakt_to_tmdb(choice, params.get('list_id'), params.get('list_name'))
+	elif not choice.startswith('_'):
+		return tmdb_trakt_to_tmdb_choice(params, choices)
+	else:
+		from apis.tmdb_api import trakt_to_tmdb
+		return trakt_to_tmdb(choice, params.get('list_id'), params.get('list_name'))
+
+def tmdb_manager_choice(params):
+	from apis import tmdb_api
+	lists = tmdb_api.get_lists('my_lists')
+	icon = params.get('icon', None) or get_icon('tmdb')
+	choices = [('New List...', 'new')]
+	for i in lists:
+		choices.append((i['name'], {'list_id': i['id'], 'list_name': i['name']}))
+	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
+	kwargs = {'items': json.dumps(list_items), 'heading': 'Add/Remove from TMDB List'}
+	choice = select_dialog([i[1] for i in choices], **kwargs)
+	if choice == None: return
+	if choice == 'new': return tmdb_api.new_tmdb_list(True, params)
+	elif tmdb_api.check_item_exists(params, choice):
+		if not kodi_utils.confirm_dialog(text='Remove \'%s\' from the list \'%s\'?' % (params.get('title'), choice.get('list_name'))): 
+			return notification('Cancelled', 1500)
+		else:
+			items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
+			return tmdb_api.add_remove('remove', items, choice.get('list_id'))
+	else:
+		if not kodi_utils.confirm_dialog(text='Add \'%s\' to the list \'%s\'?' % (params.get('title'), choice.get('list_name'))): 
+			return notification('Cancelled', 1500)
+		else:
+			items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
+			return tmdb_api.add_remove('add', items, choice.get('list_id'))
+		
 def episode_groups_choice(params):
 	episode_group_types = {1: 'Original Air Date', 2: 'Absolute', 3: 'DVD', 4: 'Digital', 5: 'Story Arc', 6: 'Production', 7: 'TV'}
 	meta = params.get('meta')
