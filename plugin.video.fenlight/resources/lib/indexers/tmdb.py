@@ -7,10 +7,7 @@ from threading import Thread
 from apis import tmdb_api
 from indexers.movies import Movies
 from indexers.tvshows import TVShows
-from indexers.seasons import single_seasons
-from indexers.episodes import build_single_episode
 from modules import kodi_utils
-from modules.utils import paginate_list
 from modules.settings import paginate, page_limit
 
 tmdb_get_lists = tmdb_api.get_lists
@@ -60,15 +57,17 @@ def get_tmdb_lists(params):
 			except Exception as e:
 				kodi_utils.logger('TMDB LIST ITEM ERROR', f"{type(e).__name__}: {str(e)}")
 	
+	page_no = params.get('page_no', 1)
 	handle = int(sys.argv[1])
 	list_type, shuffle = params['list_type'], params.get('shuffle', 'false') == 'true'
 	returning_to_list = False
 	# Define sort_method with default value
-	sort_method = 'label'
+	sort_method = 'none'
 	mode = params.get('mode', '')  # Make sure mode is defined
 		
 	try:
-		lists = tmdb_get_lists(list_type)
+		data = tmdb_get_lists(list_type, page_no)
+		lists = data.get('results')
 		
 		if shuffle:
 			returning_to_list = 'tmdb.list.build_tmdb_list' in folder_path()
@@ -88,9 +87,18 @@ def get_tmdb_lists(params):
 			sort_method = 'none'
 		else:
 			clear_property('fenlight.tmdb.lists.order')
-			# sort_method is already set to 'label' above
 		
 		add_items(handle, list(_process()))
+		total_pages=data.get('total_pages')
+		if total_pages > page_no:
+			new_page = str(page_no + 1)
+			new_params = {
+				'mode': 'tmdb.list.get_tmdb_lists', 
+				'list_type': list_type, 
+				'category_name': params.get('category_name', ''), 
+				'page_no': int(new_page)
+			}
+			add_dir(new_params, 'Next Page (%s) >>' % new_page, handle, 'nextpage', nextpage_landscape)
 		
 	except Exception as e:
 		kodi_utils.logger('TMDB ERROR', f'Exception in get_tmdb_list: {type(e).__name__}: {str(e)}')

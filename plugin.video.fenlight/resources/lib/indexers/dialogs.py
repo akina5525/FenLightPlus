@@ -183,22 +183,50 @@ def trakt_manager_choice(params):
 def trakt_trakt_to_tmdb_choice(params, choices = []):
 	if not trakt_user_active(): return notification('No Active Trakt Account', 3000)
 	icon = params.get('icon', None) or get_icon('trakt')
+	
+	# Convert page_number to integer if it exists
+	page_number = int(params.get('page_number', 1))
+	
 	if choices == []:
 		from apis.tmdb_api import get_lists
-		lists = get_lists('my_lists')
-		choices.append(('New TMDB List...', 'new'))
+		data = get_lists('my_lists', page_number)
+		lists = data.get('results')
+		page, total_pages = data.get('page'), data.get('total_pages')
+			
+		choices = []  # Reset choices to avoid duplicates when recursing
+		
+		if page > 1:
+			choices.append(('<< Previous Page (%s)' % (page - 1), 'newpage_prev'))
+		else:
+			choices.append(('New TMDB List...', 'new'))		
+		
 		for i in lists:
 			choices.append((i['name'], { 'id': i['id'], 'name': i['name'] }))
+		
+		if total_pages > page:
+			choices.append(('Next Page (%s) >>' % (page + 1), 'newpage_next'))
+			
 	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
 	kwargs = {'items': json.dumps(list_items), 'heading': 'Import Trakt to TMDB'}
 	choice = select_dialog([i[1] for i in choices], **kwargs)
-	if choice == None: return
+	
+	if choice == None: 
+		return
 	elif choice == 'new':
 		from apis.tmdb_api import new_tmdb_list
 		new_list = new_tmdb_list(default_text = params.get('list_name'))
 		tmdb_name, tmdb_id = new_list.get('list_title'), new_list.get('list_id')
+	elif choice == 'newpage_next':
+		new_params = params.copy()
+		new_params['page_number'] = page + 1
+		return trakt_trakt_to_tmdb_choice(new_params)
+	elif choice == 'newpage_prev':
+		new_params = params.copy()
+		new_params['page_number'] = page - 1
+		return trakt_trakt_to_tmdb_choice(new_params)
 	else:
 		tmdb_name, tmdb_id = choice.get('name'), choice.get('id')
+	
 	trakt_list_slug, trakt_list_type, trakt_list_user = params.get('list_slug'), params.get('list_type'), params.get('user')
 	trakt_params = { 'list_type': trakt_list_type, 'user': trakt_list_user, 'ids': { 'slug': trakt_list_slug } }
 	from apis.tmdb_api import trakt_to_tmdb

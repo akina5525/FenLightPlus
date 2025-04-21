@@ -710,12 +710,12 @@ def unauth():
 	set_setting('tmdb.account_id', 'empty_setting')
 	ok_dialog(text='Success')
 	
-def get_lists(list_type):
+def get_lists(list_type, page = 1):
 	read_token = get_setting('tmdb_read_access_token')
 	access_token = get_setting('tmdb.access_token')
 	head = {'Authorization': f"Bearer {read_token}"}
 	account_id = get_setting('tmdb.account_id')
-	url = f'{base_url_4}/account/{account_id}/lists'
+	url = f'{base_url_4}/account/{account_id}/lists?page={page}'
 
 	try:
 		response = requests.get(url, headers=head)
@@ -726,7 +726,7 @@ def get_lists(list_type):
 		return []
 
 	if json_data.get('page', 0) > 0:
-		return json_data.get('results', [])
+		return json_data
 	else:
 		return []
 
