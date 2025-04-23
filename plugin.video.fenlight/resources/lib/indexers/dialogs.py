@@ -11,6 +11,7 @@ from modules.source_utils import clear_scrapers_cache, get_aliases_titles, make_
 from modules.utils import get_datetime, title_key, adjust_premiered_date, append_module_to_syspath, manual_module_import
 # logger = kodi_utils.logger
 
+tmdb_active = settings.tmdb_user_active()
 ok_dialog, container_content, close_all_dialog, external = kodi_utils.ok_dialog, kodi_utils.container_content, kodi_utils.close_all_dialog, kodi_utils.external
 set_property, get_icon, kodi_dialog, open_settings = kodi_utils.set_property, kodi_utils.get_icon, kodi_utils.kodi_dialog, kodi_utils.open_settings
 show_busy_dialog, hide_busy_dialog, notification, confirm_dialog = kodi_utils.show_busy_dialog, kodi_utils.hide_busy_dialog, kodi_utils.notification, kodi_utils.confirm_dialog
@@ -181,6 +182,7 @@ def trakt_manager_choice(params):
 	else: trakt_api.trakt_remove_from_list(params)
 
 def trakt_trakt_to_tmdb_choice(params, choices = []):
+	
 	if not trakt_user_active(): return notification('No Active Trakt Account', 3000)
 	icon = params.get('icon', None) or get_icon('trakt')
 	

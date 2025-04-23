@@ -1,4 +1,4 @@
-<addon id="plugin.video.fenlight" name="Fen Light+" provider-name="Tikipeter/thejason40" version="2.2.01">
+<addon id="plugin.video.fenlight" name="Fen Light+" provider-name="Tikipeter/thejason40" version="2.2.05">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.requests" version="2.19.1"/>
@@ -15,8 +15,8 @@
         <platform>all</platform>
 		<disclaimer lang="en">The author of this addon does not host any of the content which is found and has no affiliation with any of the content providers.</disclaimer>
         <assets>
-            <icon>resources/media/flpi.png</icon>
-            <fanart>resources/media/flpfa.jpg</fanart>
+            <icon>resources/media/fenlight_plus_icon.png</icon>
+            <fanart>resources/media/fenlight_plus_fanart.png</fanart>
         </assets>
         <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>

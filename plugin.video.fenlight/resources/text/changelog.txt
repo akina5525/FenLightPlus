@@ -1,3 +1,11 @@
+[COLOR dodgerblue][B]Version 2.2.05[/B][/COLOR]
+- Added TMDB Lists integration
+	- Import from Trakt lists (large lists are split into 100 item chunks)
+	- Create / Delete / Clear lists from My Lists > TMDB My Lists
+	- Clear list cache from context menu if it's been updated on the TMDB website.
+	- Set list artwork from inside the list
+- Fixed 'Play # Episodes' so it works more as intended. 
+
 [COLOR dodgerblue][B]Version 2.2.00[/B][/COLOR]
 - Added TMDB List Support
 	- Lists can be imported from Trakt - large lists will take a long time, lists are seperated into 100 item chunks to bypass TMDBs 30 second timeout.

@@ -725,11 +725,14 @@ class Sources():
 					sleep(100)
 				except: pass
 			if continue_nextep:
-				if self.num_episodes and int(self.num_episodes) > 1:
-					while player.isPlayingVideo(): sleep(100)
-					self.num_episodes = str(int(self.num_episodes) - 1)
-					self._make_resolve_dialog()
-					return True
+				if self.num_episodes:
+					if int(self.num_episodes) > 1:
+						while player.isPlayingVideo(): sleep(100)
+						self.num_episodes = str(int(self.num_episodes) - 1)
+						self._make_resolve_dialog()
+						return True
+					elif use_window: action = self._make_nextep_dialog(default_action='cancel')
+					else: return False
 				elif use_window: action = self._make_nextep_dialog(default_action=default_action)
 				else: notification('[B]Next Up:[/B] %s S%02dE%02d' % (self.meta.get('title'), self.meta.get('season'), self.meta.get('episode')), 6500, self.meta.get('poster'))
 				if not action: action = default_action

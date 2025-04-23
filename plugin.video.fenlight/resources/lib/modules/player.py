@@ -100,7 +100,8 @@ class FenLightPlayer(xbmc_player):
 						playNextNum = True
 					else:
 						playNextNum = False
-					if self.autoplay_nextep or self.autoscrape_nextep or playNextNum:
+					if playNextNum: self.autoplay_nextep = True
+					if self.autoplay_nextep or self.autoscrape_nextep:
 						if not self.nextep_info_gathered: self.info_next_ep()
 						if round(self.total_time - self.curr_time) <= self.start_prep: self.run_next_ep(); break
 				except: pass

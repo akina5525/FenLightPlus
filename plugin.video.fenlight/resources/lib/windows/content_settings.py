@@ -49,7 +49,7 @@ content_settings = '\
 \n                    </item>\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(10)</visible>\
-\n                        <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),flpfa.jpg)</visible>\
+\n                        <visible>!String.EndsWith(Window(10000).Property(fenlight.default_addon_fanart),fenlight_plus_fanart.png)</visible>\
 \n                        <property name="setting_label">    - Restore Default Background Image</property>\
 \n                        <property name="setting_type">action</property>\
 \n                        <property name="setting_value">...</property>\
