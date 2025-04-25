@@ -848,12 +848,21 @@ def trakt_to_tmdb(choice, list_id, tmdb_list_name, confirm = True):
 		trakt_items = trakt_api.trakt_favorites(media_type, '')
 		
 	total_items = len(trakt_items)
+	
+	if progress.iscanceled():
+		progress.close()
+		notification('Cancelled', 3000)
+		return
+	
+	progress.close()
+	
 	if confirm:
 		if not kodi_utils.confirm_dialog(text='Import %s items to the list \'%s\'?' % (str(total_items), tmdb_list_name)): 
 			return notification('Cancelled', 3000)
 
 	tmdb_items = []
 	skipped_items = 0
+	progress.create('Processing Trakt List', 'Please wait...')
 	
 	for index, i in enumerate(trakt_items):
 		# Update progress bar (calculate percentage)

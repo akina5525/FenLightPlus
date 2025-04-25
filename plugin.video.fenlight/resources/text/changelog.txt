@@ -1,3 +1,6 @@
+[COLOR dodgerblue][B]Version 2.2.06[/B][/COLOR]
+- Fixed a bug where the confirmation box was covered when importing a Trakt list to TMDB.
+
 [COLOR dodgerblue][B]Version 2.2.05[/B][/COLOR]
 - Added TMDB Lists integration
 	- Import from Trakt lists (large lists are split into 100 item chunks)
