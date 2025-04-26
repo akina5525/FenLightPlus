@@ -764,17 +764,15 @@ def new_tmdb_list(keep_open = False, params = '', default_text = ''):
 	url = f'{base_url_4}/list'
 	response = requests.post(url, json=payload, headers=head).json()
 	if response.get('success'):
-		
+		return_params = { 'list_title': list_title, 'list_id': response.get('id') }
 		if not default_text == '':
-			return_params = { 'list_title': list_title, 'list_id': response.get('id') }
-			sleep(1000)
 			return return_params
-		notification('Success', 3000)
+		notification('List Created', 1500)
 		kodi_utils.kodi_refresh()
 		if keep_open:
 			run_plugin = 'RunPlugin(%s)'
 			kodi_utils.execute_builtin(run_plugin % kodi_utils.build_url(params))
-
+		return return_params
 	else:
 		notification('Error', 3000)
 		kodi_utils.logger('TMDB New List Error', response.get('status_message'))

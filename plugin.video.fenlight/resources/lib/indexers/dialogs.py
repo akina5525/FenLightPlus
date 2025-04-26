@@ -286,16 +286,45 @@ def tmdb_trakt_to_tmdb_choice(params, choices = []):
 
 def tmdb_manager_choice(params):
 	from apis import tmdb_api
-	lists = tmdb_api.get_lists('my_lists')
+	
+	page_number = int(params.get('page_number', 1))	# Convert page_number to integer if it exists
+	data = tmdb_api.get_lists('my_lists', page_number)
+	lists = data.get('results')
+	page, total_pages = data.get('page'), data.get('total_pages')
 	icon = params.get('icon', None) or get_icon('tmdb')
-	choices = [('New List...', 'new')]
+	
+	choices = []
+	
+	# Set previous page or new list option
+	if page > 1:
+		choices.append(('<< Previous Page (%s)' % (page - 1), 'newpage_prev'))
+	else:
+		choices.append(('New TMDB List...', 'new'))		
+	
+	# Set list items
 	for i in lists:
 		choices.append((i['name'], {'list_id': i['id'], 'list_name': i['name']}))
+	
+	# Set next page option
+	if total_pages > page:
+			choices.append(('Next Page (%s) >>' % (page + 1), 'newpage_next'))
+	
 	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
 	kwargs = {'items': json.dumps(list_items), 'heading': 'Add/Remove from TMDB List'}
 	choice = select_dialog([i[1] for i in choices], **kwargs)
 	if choice == None: return
-	if choice == 'new': return tmdb_api.new_tmdb_list(True, params)
+	if choice == 'new': 
+		new_list = tmdb_api.new_tmdb_list(False, params)
+		items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
+		return tmdb_api.add_remove('add', items, new_list.get('list_id'))
+	elif choice == 'newpage_next':
+		new_params = params.copy()
+		new_params['page_number'] = page + 1
+		return tmdb_manager_choice(new_params)
+	elif choice == 'newpage_prev':
+		new_params = params.copy()
+		new_params['page_number'] = page - 1
+		return tmdb_manager_choice(new_params)
 	elif tmdb_api.check_item_exists(params, choice):
 		if not kodi_utils.confirm_dialog(text='Remove \'%s\' from the list \'%s\'?' % (params.get('title'), choice.get('list_name'))): 
 			return notification('Cancelled', 1500)
