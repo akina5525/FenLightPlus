@@ -713,7 +713,7 @@ def unauth():
 def get_lists(list_type, page = 1):
 	read_token = get_setting('tmdb_read_access_token')
 	access_token = get_setting('tmdb.access_token')
-	head = {'Authorization': f"Bearer {read_token}"}
+	head = {'Authorization': f"Bearer {access_token}"}
 	account_id = get_setting('tmdb.account_id')
 	url = f'{base_url_4}/account/{account_id}/lists?page={page}'
 
