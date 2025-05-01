@@ -1340,8 +1340,6 @@
                       </item>
                       <item>
                           <visible>Container(2000).HasFocus(50)</visible>
-                          <visible>!String.IsEqual(Window(10000).Property(fenlight.rd.token),empty_setting)</visible>
-                          <visible>String.IsEqual(Window(10000).Property(fenlight.rd.enabled),true)</visible>
                           <property name="setting_label">Alternative API URL</property>
                           <property name="setting_type">boolean</property>
                           <property name="setting_value">$INFO[Window(10000).Property(fenlight.rd.alt_api)]</property>

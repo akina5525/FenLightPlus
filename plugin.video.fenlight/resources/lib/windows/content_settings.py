@@ -908,8 +908,6 @@ content_settings = '\
 \n                    </item>\
 \n                    <item>\
 \n                        <visible>Container(2000).HasFocus(50)</visible>\
-\n                        <visible>!String.IsEqual(Window(10000).Property(fenlight.rd.token),empty_setting)</visible>\
-\n                        <visible>String.IsEqual(Window(10000).Property(fenlight.rd.enabled),true)</visible>\
 \n                        <property name="setting_label">Alternative API URL</property>\
 \n                        <property name="setting_type">boolean</property>\
 \n                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.rd.alt_api)]</property>\
