@@ -1,6 +1,7 @@
 Version 2.2.11
 - Fix: Resolved NameError for tmdb_manager_choice in extras.py by adding missing import.
 
+
 Version 2.2.10
 - Fix: Corrected indentation error in extras.py that could cause issues when opening extras windows.
 
