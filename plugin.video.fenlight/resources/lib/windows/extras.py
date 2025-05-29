@@ -21,7 +21,7 @@ default_all_episodes, extras_enabled_menus, tmdb_api_key = settings.default_all_
 enable_extra_ratings, nextep_method, watched_indicators = settings.extras_enable_extra_ratings, settings.nextep_method, settings.watched_indicators
 extras_enable_scrollbars, omdb_api_key, date_offset, mpaa_region = settings.extras_enable_scrollbars, settings.omdb_api_key, settings.date_offset, settings.mpaa_region
 options_menu_choice, extras_menu_choice = dialogs.options_menu_choice, dialogs.extras_menu_choice
-trakt_manager_choice, random_choice, playback_choice, favorites_choice = dialogs.trakt_manager_choice, dialogs.random_choice, dialogs.playback_choice, dialogs.favorites_choice
+trakt_manager_choice, tmdb_manager_choice, random_choice, playback_choice, favorites_choice = dialogs.trakt_manager_choice, dialogs.tmdb_manager_choice, dialogs.random_choice, dialogs.playback_choice, dialogs.favorites_choice
 get_next_episodes, get_watched_status_movie, watched_info_movie = watched_status.get_next_episodes, watched_status.get_watched_status_movie, watched_status.watched_info_movie
 watched_info_episode, get_database, get_next = watched_status.watched_info_episode, watched_status.get_database, watched_status.get_next
 get_progress_status_movie, get_bookmarks_movie = watched_status.get_progress_status_movie, watched_status.get_bookmarks_movie
@@ -710,14 +710,14 @@ class Extras(BaseDialog):
 			except:
 				self.restore_setting_default({'setting_id': setting_id.replace('fenlight.', ''), 'silent': 'true'})
 				button_action = self.get_setting(setting_id)
-        if button_action == 'show_trakt_manager':
-            button_action = 'show_tmdb_manager'
-            button_label = "TMDB Manager"
-        elif button_action == 'show_in_trakt_lists':
-            button_action = 'show_in_tmdb_lists'
-            button_label = "In TMDB Lists"
-        else:
-            button_label = extras_button_label_values[self.media_type][button_action]
+			if button_action == 'show_trakt_manager':
+				button_action = 'show_tmdb_manager'
+				button_label = "TMDB Manager"
+			elif button_action == 'show_in_trakt_lists':
+				button_action = 'show_in_tmdb_lists'
+				button_label = "In TMDB Lists"
+			else:
+				button_label = extras_button_label_values[self.media_type][button_action]
 			self.setProperty(label_base % item, button_label)
 			self.button_action_dict[item] = button_action
 		self.button_action_dict[50] = 'show_plot'
