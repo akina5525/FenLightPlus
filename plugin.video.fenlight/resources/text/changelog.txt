@@ -1,2 +1,5 @@
+Version 2.2.10
+- Fix: Corrected indentation error in extras.py that could cause issues when opening extras windows.
+
 v2.2.09
 - Replaced Trakt list functions in the Extras screen with TMDB list functions (e.g., Add to List, Remove from List).
