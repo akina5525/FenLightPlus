@@ -1,0 +1,36 @@
+name: Package Kodi Addon
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Read version number
+        id: get_version
+        run: |
+          VERSION=$(cat packages/fen_light_version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create packages directory if not exists
+        run: mkdir -p packages
+
+      - name: Zip the addon
+        run: |
+          zip -r "packages/plugin.video.fenlight-${VERSION}.zip" plugin.video.fenlight
+
+      - name: Commit and push zip
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "packages/plugin.video.fenlight-${VERSION}.zip"
+          git commit -m "Add packaged addon zip for version ${VERSION} [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
