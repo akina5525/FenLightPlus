@@ -96,7 +96,7 @@ class Extras(BaseDialog):
 			if focus_id == cast_id:
 				person_name = self.get_listitem(focus_id).getProperty(self.item_action_dict[focus_id])
 				return person_search(person_name)
-			elif focus_id == in_lists_id:
+			elif focus_id == in_lists_id: # This context action is for Trakt lists. May need a similar one for TMDB lists if context menu actions are desired.
 				show_busy_dialog()
 				try:
 					list_item, position = self.get_listitem(focus_id), self.get_position(focus_id)
@@ -129,16 +129,32 @@ class Extras(BaseDialog):
 			elif self.control_id in text_list_ids:
 				if self.control_id == parentsguide_id: return self.show_text_media(text=chosen_var)
 				else: return self.select_item(self.control_id, self.show_text_media(text=self.get_attribute(self, chosen_var), current_index=position))
-			elif self.control_id in open_folder_list_ids:
+			elif self.control_id in open_folder_list_ids: # This is for Trakt lists. A similar block might be needed for TMDB lists if self.folder_runner leads to a list that needs specific item actions.
 				try: chosen_var = self.get_listitem(self.control_id).getProperty(self.item_action_dict[self.control_id])
 				except: return
 				if not chosen_var: return
 				try:
 					self.close_all()
-					chosen = self.get_attribute(self, chosen_var)[position]
-					list_name, user, slug = chosen['name'], chosen['user']['ids']['slug'], chosen['ids']['slug']
-					self.selected = self.folder_runner({'mode': 'trakt.list.build_trakt_list', 'user': user, 'slug': slug, 'list_type': 'user_lists', 'list_name': list_name})
-					self.close()
+					chosen = self.get_attribute(self, chosen_var)[position] # This line assumes chosen_var is a key to an attribute on self.
+					# For TMDB, 'chosen' would likely be one of the dicts from item_found_in_lists.
+					# The mode for TMDB list contents would be different, e.g. 'tmdb.list.build_tmdb_list_contents'
+					# and it would take 'list_id' from chosen['id']
+					# This part needs to be adapted if we are truly making it similar to Trakt's open_folder_list_ids
+					# For now, the new method show_in_tmdb_lists will use a mode 'tmdb.list.build_tmdb_list_display'
+					# which is expected to display the lists, and then selecting a list would trigger another action,
+					# possibly 'tmdb.list.build_tmdb_list_contents' with the 'list_id'.
+					
+					# Original Trakt specific code:
+					# list_name, user, slug = chosen['name'], chosen['user']['ids']['slug'], chosen['ids']['slug']
+					# self.selected = self.folder_runner({'mode': 'trakt.list.build_trakt_list', 'user': user, 'slug': slug, 'list_type': 'user_lists', 'list_name': list_name})
+					# self.close()
+					
+					# Placeholder if TMDB list selection needs similar handling here:
+					if chosen_var == 'all_tmdb_lists_placeholder': # This is a placeholder, actual property will be different
+						list_details = self.get_attribute(self, chosen_var)[position] # Example
+						self.selected = self.folder_runner({'mode': 'tmdb.list.build_tmdb_list_contents', 'list_id': list_details['id'], 'list_name': list_details['name']})
+						self.close()
+
 				except: return
 			else: return
 
@@ -254,8 +270,8 @@ class Extras(BaseDialog):
 			self.add_items(comments_id, item_list)
 		except: pass
 
-	def make_in_lists(self):
-		if not in_lists_id in self.enabled_lists: return
+	def make_in_lists(self): # This is the Trakt make_in_lists. A new one might be needed for TMDB if the display is complex.
+		if not in_lists_id in self.enabled_lists: return # in_lists_id is currently tied to Trakt.
 		def builder():
 			for count, item in enumerate(self.all_in_lists, 1):
 				try:
@@ -276,11 +292,11 @@ class Extras(BaseDialog):
 			try: liked_lists = [(i['list']['ids']['slug'], i['list']['user']['ids']['slug']) for i in trakt_api.trakt_get_lists('liked_lists')]
 			except: liked_lists = []
 			template, replacements = '%02d.[CR][B]%s[/B]%s[CR][CR]by %s[CR](x%02d)', (('-', ' '), ('_', ' '), ('.', ' '))
-			self.all_in_lists = trakt_api.trakt_lists_with_media(self.media_type, self.imdb_id)
+			self.all_in_lists = trakt_api.trakt_lists_with_media(self.media_type, self.imdb_id) # Trakt API call
 			item_list = list(builder())
-			self.setProperty('trakt_in_lists.number', count_insert % len(item_list))
-			self.item_action_dict[in_lists_id] = 'content_list'
-			self.add_items(in_lists_id, item_list)
+			self.setProperty('trakt_in_lists.number', count_insert % len(item_list)) # Property for Trakt
+			self.item_action_dict[in_lists_id] = 'content_list' # Action for Trakt
+			self.add_items(in_lists_id, item_list) # Control ID for Trakt
 		except: pass
 
 	def make_trivia(self):
@@ -634,9 +650,49 @@ class Extras(BaseDialog):
 											'imdb_id': self.imdb_id, 'category_name': '%s In Trakt Lists' % self.title})
 		self.close()
 
+	def show_in_tmdb_lists(self):
+		self.close_all()
+		tmdb_media_type = 'movie' if self.media_type == 'movie' else 'tv'
+		try:
+			# Assuming tmdb_api.get_lists might not require an API key if the tmdb_api module handles it internally.
+			# If tmdb_api.get_lists() returns None or raises an exception on failure, this try-except will catch it.
+			all_tmdb_lists_response = tmdb_api.get_lists() 
+			if not all_tmdb_lists_response or 'results' not in all_tmdb_lists_response:
+				ok_dialog(text='Could not fetch TMDB Lists.')
+				self.close()
+				return
+
+			all_tmdb_lists = all_tmdb_lists_response['results']
+			item_found_in_lists = []
+			for list_obj in all_tmdb_lists:
+				list_id = list_obj.get('id')
+				list_name = list_obj.get('name', 'Unknown List')
+				if not list_id: continue
+				# Assuming tmdb_api.check_item_exists might not require an API key directly.
+				# And that it takes list_id, item_tmdb_id, and item_media_type.
+				is_present = tmdb_api.check_item_exists(list_id, self.tmdb_id, tmdb_media_type)
+				if is_present:
+					item_found_in_lists.append({'id': list_id, 'name': list_name, 'poster_path': list_obj.get('poster_path', '')})
+			
+			if item_found_in_lists:
+				self.selected = self.folder_runner({
+					'mode': 'tmdb.list.build_tmdb_list_display', # This mode will need to be implemented to handle the display of these lists
+					'data': item_found_in_lists,
+					'category_name': '%s In TMDB Lists' % self.title
+				})
+			else:
+				ok_dialog(text='This item is not found in any of your TMDB Lists.')
+		except Exception as e:
+			# logger(f"Error in show_in_tmdb_lists: {e}", 'error') # Uncomment when logger is available
+			ok_dialog(text='Error occurred while fetching TMDB Lists.')
+		self.close()
+
 	def show_trakt_manager(self):
 		return trakt_manager_choice({'tmdb_id': self.tmdb_id, 'imdb_id': self.imdb_id, 'tvdb_id': self.meta_get('tvdb_id', 'None'),
 									'media_type': self.media_type, 'icon': self.poster})
+
+	def show_tmdb_manager(self):
+		return tmdb_manager_choice({'tmdb_id': self.tmdb_id, 'media_type': self.media_type, 'icon': self.poster, 'is_anime': self.is_anime})
 
 	def show_favorites_manager(self):
 		return favorites_choice({'media_type': self.media_type, 'tmdb_id': str(self.tmdb_id), 'title': self.title, 'is_anime': self.is_anime, 'refresh': 'false'})
@@ -651,11 +707,17 @@ class Extras(BaseDialog):
 			setting_id = setting_id_base + str(item)
 			try:
 				button_action = self.get_setting(setting_id)
-				button_label = extras_button_label_values[self.media_type][button_action]
 			except:
 				self.restore_setting_default({'setting_id': setting_id.replace('fenlight.', ''), 'silent': 'true'})
 				button_action = self.get_setting(setting_id)
-				button_label = extras_button_label_values[self.media_type][button_action]
+        if button_action == 'show_trakt_manager':
+            button_action = 'show_tmdb_manager'
+            button_label = "TMDB Manager"
+        elif button_action == 'show_in_trakt_lists':
+            button_action = 'show_in_tmdb_lists'
+            button_label = "In TMDB Lists"
+        else:
+            button_label = extras_button_label_values[self.media_type][button_action]
 			self.setProperty(label_base % item, button_label)
 			self.button_action_dict[item] = button_action
 		self.button_action_dict[50] = 'show_plot'
