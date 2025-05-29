@@ -710,14 +710,14 @@ class Extras(BaseDialog):
 			except:
 				self.restore_setting_default({'setting_id': setting_id.replace('fenlight.', ''), 'silent': 'true'})
 				button_action = self.get_setting(setting_id)
-        if button_action == 'show_trakt_manager':
-            button_action = 'show_tmdb_manager'
-            button_label = "TMDB Manager"
-        elif button_action == 'show_in_trakt_lists':
-            button_action = 'show_in_tmdb_lists'
-            button_label = "In TMDB Lists"
-        else:
-            button_label = extras_button_label_values[self.media_type][button_action]
+			if button_action == 'show_trakt_manager':
+				button_action = 'show_tmdb_manager'
+				button_label = "TMDB Manager"
+			elif button_action == 'show_in_trakt_lists':
+				button_action = 'show_in_tmdb_lists'
+				button_label = "In TMDB Lists"
+			else:
+				button_label = extras_button_label_values[self.media_type][button_action]
 			self.setProperty(label_base % item, button_label)
 			self.button_action_dict[item] = button_action
 		self.button_action_dict[50] = 'show_plot'
