@@ -227,7 +227,7 @@ def tmdb_manager_choice(params):
 	action_type = dialog_choices[actual_index]['action']
 
 	if action_type in ['add', 'remove']:
-		user_lists_response = tmdb_api.get_lists() # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
+		user_lists_response = tmdb_api.get_lists(list_type='my_lists') # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
 		if not user_lists_response or 'results' not in user_lists_response or not user_lists_response['results']:
 			ok_dialog(text='No TMDB lists found or error fetching lists.')
 			return
