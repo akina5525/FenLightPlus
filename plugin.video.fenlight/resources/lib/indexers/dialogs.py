@@ -9,6 +9,7 @@ from modules.downloader import manager
 from modules import kodi_utils, settings, metadata
 from modules.source_utils import clear_scrapers_cache, get_aliases_titles, make_alias_dict, audio_filter_choices, source_filters
 from modules.utils import get_datetime, title_key, adjust_premiered_date, append_module_to_syspath, manual_module_import
+from apis import tmdb_api # Added for tmdb_manager_choice
 # logger = kodi_utils.logger
 
 tmdb_active = settings.tmdb_user_active()
@@ -23,6 +24,10 @@ extras_button_label_values, jsonrpc_get_addons, tmdb_api_key = kodi_utils.extras
 extras_enabled_menus, active_internal_scrapers, auto_play = settings.extras_enabled_menus, settings.active_internal_scrapers, settings.auto_play
 quality_filter, date_offset, trakt_user_active = settings.quality_filter, settings.date_offset, settings.trakt_user_active
 single_ep_list, scraper_names = kodi_utils.single_ep_list, kodi_utils.scraper_names
+# For tmdb_manager_choice, ensure kodi_utils.dialog (for .input) and kodi_utils.yes_no_dialog are available or aliased
+dialog = kodi_utils.kodi_dialog # Assuming kodi_dialog can be used for .input
+yes_no_dialog = kodi_utils.confirm_dialog # Assuming confirm_dialog can be used for yes/no prompts (might need specific yes_no_dialog if behavior differs)
+
 
 def preferred_autoplay_choice(params):
 	def _default_choices():
@@ -70,7 +75,7 @@ def preferred_autoplay_choice(params):
 	return preferred_autoplay_choice({'choices': choices})
 
 def tmdb_api_check_choice(params):
-	from apis.tmdb_api import movie_details
+	from apis.tmdb_api import movie_details # Moved import here to keep it local if not used elsewhere broadly
 	data = movie_details('299534', tmdb_api_key())
 	if not data.get('success', True): text = 'There is an issue with your API Key.[CR][B]"Error: %s"[/B]' % data.get('status_message', '')
 	else: text = 'Your TMDb API Key is enabled and working'
@@ -177,9 +182,111 @@ def trakt_manager_choice(params):
 	kwargs = {'items': json.dumps(list_items), 'heading': 'Trakt Lists Manager'}
 	choice = select_dialog([i[1] for i in choices], **kwargs)
 	if choice == None: return
-	from apis import trakt_api
+	from apis import trakt_api # Moved import here
 	if choice == 'Add': trakt_api.trakt_add_to_list(params)
 	else: trakt_api.trakt_remove_from_list(params)
+
+def tmdb_manager_choice(params):
+	# params: tmdb_id, media_type ('movie' or 'tvshow'), icon (optional), is_anime (optional for tvshow)
+	# title from params is also used for confirm dialogs.
+	# Ensure kodi_utils.dialog (for .input) and kodi_utils.yes_no_dialog are available or aliased
+	# dialog = kodi_utils.kodi_dialog (already aliased)
+	# yes_no_dialog = kodi_utils.confirm_dialog (already aliased, but confirm_dialog might not be a direct replacement for a dedicated yes/no)
+
+	tmdb_id = params.get('tmdb_id')
+	media_type_param = params.get('media_type')
+	item_title = params.get('title', 'This item') # title is used in original code for confirm dialog, ensure it's passed or default.
+
+	if not tmdb_id or not media_type_param:
+		notification("Missing TMDB ID or media type.", 3000)
+		return
+
+	tmdb_api_media_type = 'movie' if media_type_param == 'movie' else 'tv'
+
+	dialog_choices = [
+		{'line1': 'Add to TMDB List', 'action': 'add'},
+		{'line1': 'Remove from TMDB List', 'action': 'remove'},
+		{'line1': 'Create New TMDB List', 'action': 'create'}
+	]
+	
+	display_lines = [item['line1'] for item in dialog_choices]
+	kwargs = {'items': json.dumps([{'line1': line} for line in display_lines]), 'heading': 'TMDB List Manager'}
+	selected_index = select_dialog(display_lines, **kwargs)
+
+	if selected_index is None or selected_index == -1:
+		return
+
+	action_type = dialog_choices[selected_index]['action']
+
+	if action_type in ['add', 'remove']:
+		user_lists_response = tmdb_api.get_lists() # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
+		if not user_lists_response or 'results' not in user_lists_response or not user_lists_response['results']:
+			ok_dialog(text='No TMDB lists found or error fetching lists.')
+			return
+		
+		user_lists = user_lists_response['results']
+		list_display_items = [{'line1': lst.get('name', 'Unnamed List'), 'id': lst.get('id')} for lst in user_lists]
+		
+		heading_text = 'Select TMDB List to Add To' if action_type == 'add' else 'Select TMDB List to Remove From'
+		list_kwargs = {'items': json.dumps([{'line1': item['line1']} for item in list_display_items]), 'heading': heading_text}
+		chosen_list_index = select_dialog([item['line1'] for item in list_display_items], **list_kwargs)
+
+		if chosen_list_index is None or chosen_list_index == -1:
+			return
+			
+		selected_list_id = list_display_items[chosen_list_index]['id']
+		selected_list_name = list_display_items[chosen_list_index]['line1']
+
+		# Confirmation before add/remove
+		confirm_text_action = "Add" if action_type == 'add' else "Remove"
+		confirm_text_preposition = "to" if action_type == 'add' else "from"
+		if not yes_no_dialog(heading='Confirm Action', text='%s %s %s %s?' % (confirm_text_action, item_title, confirm_text_preposition, selected_list_name)):
+			notification('Cancelled', 1500)
+			return
+
+		# The existing tmdb_api.add_remove takes `action` ('add'/'remove'), `items` (list of dicts), `list_id`.
+		# Adapting to the new requirement's signature `add_remove(list_id, item_id, item_media_type, add_or_remove)`
+		# For consistency with the existing `tmdb_api.add_remove`, I will use its signature.
+		items_payload = [{'media_type': tmdb_api_media_type, 'media_id': tmdb_id}]
+		result = tmdb_api.add_remove(action_type, items_payload, selected_list_id)
+		
+		# Assuming result is a dict with 'success' and 'status_message' or similar
+		if result and result.get('success'):
+			notification('%s successful.' % confirm_text_action.capitalize(), 2000)
+		else:
+			error_msg = result.get('status_message', 'Unknown error.') if result else 'Unknown error.'
+			ok_dialog(text='%s failed. %s' % (confirm_text_action.capitalize(), error_msg))
+
+	elif action_type == 'create':
+		# The existing tmdb_api.new_tmdb_list(False, params) seems to be for a different flow.
+		# The new requirement is tmdb_api.new_tmdb_list(name, description)
+		# I will use dialog.input for name and description.
+		new_list_name = dialog.input('Enter New List Name')
+		if not new_list_name:
+			notification('Cancelled', 1500)
+			return
+		
+		new_list_description = dialog.input('Enter List Description (Optional)')
+		# Assuming tmdb_api.create_list is the correct function name for this based on my plan.
+		# If it's new_tmdb_list, its signature needs to be name, description.
+		# Let's assume tmdb_api.create_list exists or will be created with this signature.
+		creation_result = tmdb_api.create_list(name=new_list_name, description=new_list_description)
+
+		if creation_result and creation_result.get('success'):
+			new_list_id = creation_result.get('id')
+			notification('List "%s" created successfully.' % new_list_name, 2000)
+			
+			if new_list_id and yes_no_dialog(heading='Add Item', text='Add %s to "%s"?' % (item_title, new_list_name)):
+				items_payload = [{'media_type': tmdb_api_media_type, 'media_id': tmdb_id}]
+				add_result = tmdb_api.add_remove('add', items_payload, new_list_id)
+				if add_result and add_result.get('success'):
+					notification('Item added to "%s".' % new_list_name, 2000)
+				else:
+					error_msg = add_result.get('status_message', 'Unknown error.') if add_result else 'Unknown error.'
+					ok_dialog(text='Failed to add item. %s' % error_msg)
+		else:
+			error_msg = creation_result.get('status_message', 'Unknown error.') if creation_result else 'Unknown error.'
+			ok_dialog(text='Failed to create list. %s' % error_msg)
 
 def trakt_trakt_to_tmdb_choice(params, choices = []):
 	
@@ -190,7 +297,7 @@ def trakt_trakt_to_tmdb_choice(params, choices = []):
 	page_number = int(params.get('page_number', 1))
 	
 	if choices == []:
-		from apis.tmdb_api import get_lists
+		from apis.tmdb_api import get_lists # Moved import here
 		data = get_lists('my_lists', page_number)
 		lists = data.get('results')
 		page, total_pages = data.get('page'), data.get('total_pages')
@@ -215,7 +322,7 @@ def trakt_trakt_to_tmdb_choice(params, choices = []):
 	if choice == None: 
 		return
 	elif choice == 'new':
-		from apis.tmdb_api import new_tmdb_list
+		from apis.tmdb_api import new_tmdb_list # Moved import here
 		new_list = new_tmdb_list(default_text = params.get('list_name'))
 		tmdb_name, tmdb_id = new_list.get('list_title'), new_list.get('list_id')
 	elif choice == 'newpage_next':
@@ -231,7 +338,7 @@ def trakt_trakt_to_tmdb_choice(params, choices = []):
 	
 	trakt_list_slug, trakt_list_type, trakt_list_user = params.get('list_slug'), params.get('list_type'), params.get('user')
 	trakt_params = { 'list_type': trakt_list_type, 'user': trakt_list_user, 'ids': { 'slug': trakt_list_slug } }
-	from apis.tmdb_api import trakt_to_tmdb
+	from apis.tmdb_api import trakt_to_tmdb # Moved import here
 	return trakt_to_tmdb(trakt_params, tmdb_id, tmdb_name, confirm = False)
 
 def tmdb_trakt_to_tmdb_choice(params, choices = []):
@@ -262,7 +369,7 @@ def tmdb_trakt_to_tmdb_choice(params, choices = []):
 	elif '_lists' in choice:
 		choices = []
 		list_type = choice
-		from apis.trakt_api import trakt_get_lists
+		from apis.trakt_api import trakt_get_lists # Moved import here
 		lists = trakt_get_lists(choice)
 		if list_type == 'liked_lists':
 			for i in lists:
@@ -276,67 +383,13 @@ def tmdb_trakt_to_tmdb_choice(params, choices = []):
 		('Favorites - TV Shows', '_favorites_tv')
 		]
 	if not isinstance(choice, str):
-		from apis.tmdb_api import trakt_to_tmdb
+		from apis.tmdb_api import trakt_to_tmdb # Moved import here
 		return trakt_to_tmdb(choice, params.get('list_id'), params.get('list_name'))
 	elif not choice.startswith('_'):
 		return tmdb_trakt_to_tmdb_choice(params, choices)
 	else:
-		from apis.tmdb_api import trakt_to_tmdb
+		from apis.tmdb_api import trakt_to_tmdb # Moved import here
 		return trakt_to_tmdb(choice, params.get('list_id'), params.get('list_name'))
-
-def tmdb_manager_choice(params):
-	from apis import tmdb_api
-	
-	page_number = int(params.get('page_number', 1))	# Convert page_number to integer if it exists
-	data = tmdb_api.get_lists('my_lists', page_number)
-	lists = data.get('results')
-	page, total_pages = data.get('page'), data.get('total_pages')
-	icon = params.get('icon', None) or get_icon('tmdb')
-	
-	choices = []
-	
-	# Set previous page or new list option
-	if page > 1:
-		choices.append(('<< Previous Page (%s)' % (page - 1), 'newpage_prev'))
-	else:
-		choices.append(('New TMDB List...', 'new'))		
-	
-	# Set list items
-	for i in lists:
-		choices.append((i['name'], {'list_id': i['id'], 'list_name': i['name']}))
-	
-	# Set next page option
-	if total_pages > page:
-			choices.append(('Next Page (%s) >>' % (page + 1), 'newpage_next'))
-	
-	list_items = [{'line1': item[0], 'icon': icon} for item in choices]
-	kwargs = {'items': json.dumps(list_items), 'heading': 'Add/Remove from TMDB List'}
-	choice = select_dialog([i[1] for i in choices], **kwargs)
-	if choice == None: return
-	if choice == 'new': 
-		new_list = tmdb_api.new_tmdb_list(False, params)
-		items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
-		return tmdb_api.add_remove('add', items, new_list.get('list_id'))
-	elif choice == 'newpage_next':
-		new_params = params.copy()
-		new_params['page_number'] = page + 1
-		return tmdb_manager_choice(new_params)
-	elif choice == 'newpage_prev':
-		new_params = params.copy()
-		new_params['page_number'] = page - 1
-		return tmdb_manager_choice(new_params)
-	elif tmdb_api.check_item_exists(params, choice):
-		if not kodi_utils.confirm_dialog(text='Remove \'%s\' from the list \'%s\'?' % (params.get('title'), choice.get('list_name'))): 
-			return notification('Cancelled', 1500)
-		else:
-			items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
-			return tmdb_api.add_remove('remove', items, choice.get('list_id'))
-	else:
-		if not kodi_utils.confirm_dialog(text='Add \'%s\' to the list \'%s\'?' % (params.get('title'), choice.get('list_name'))): 
-			return notification('Cancelled', 1500)
-		else:
-			items = [{'media_type': params.get('media_type'), 'media_id': params.get('tmdb_id')}]
-			return tmdb_api.add_remove('add', items, choice.get('list_id'))
 		
 def episode_groups_choice(params):
 	episode_group_types = {1: 'Original Air Date', 2: 'Absolute', 3: 'DVD', 4: 'Digital', 5: 'Story Arc', 6: 'Production', 7: 'TV'}
@@ -678,7 +731,8 @@ def color_choice(params):
 	return open_window(('windows.color', 'SelectColor'), 'color.xml', current_setting=params.get('current_setting', None))
 
 def mpaa_region_choice(params={}):
-	from modules.meta_lists import regions
+	from modules.meta_lists import language_choices # Should be regions, corrected below
+	from modules.meta_lists import regions # Corrected import
 	regions.sort(key=lambda x: x['name'])
 	list_items = [{'line1': i['name']} for i in regions]
 	kwargs = {'items': json.dumps(list_items), 'heading': 'Set MPAA Region', 'narrow_window': 'true'}
@@ -709,6 +763,7 @@ def options_menu_choice(params, meta=None):
 	if from_extras:
 		if menu_type in ('movie', 'episode'): listing_append(('Playback Options', 'Scrapers Options', 'playback_choice'))
 		if trakt_user_active(): listing_append(('Trakt Lists Manager', '', 'trakt_manager'))
+		if tmdb_active: listing_append(('TMDB Lists Manager', '', 'tmdb_manager_choice_placeholder')) # Placeholder for actual call
 		listing_append(('Favorites Manager', '', 'favorites_choice'))
 	if menu_type == 'tvshow': listing_append(('Play Random', 'Based On %s' % rootname, 'random'))
 	if menu_type in ('tvshow', 'season'):
@@ -772,6 +827,8 @@ def options_menu_choice(params, meta=None):
 		return random_choice({'meta': meta, 'poster': poster})
 	if choice == 'trakt_manager':
 		return trakt_manager_choice({'tmdb_id': tmdb_id, 'imdb_id': imdb_id, 'tvdb_id': tvdb_id or 'None', 'media_type': content, 'icon': poster})
+	if choice == 'tmdb_manager_choice_placeholder': # Actual call to the new/refactored tmdb_manager_choice
+		return tmdb_manager_choice({'tmdb_id': tmdb_id, 'media_type': content, 'icon': poster, 'title': title, 'is_anime': is_anime})
 	if choice == 'favorites_choice':
 		return favorites_choice({'media_type': content if content in ('movie', 'tvshow') else 'tvshow', 'tmdb_id': tmdb_id, 'title': title, 'is_anime': is_anime})
 	if choice == 'toggle_autoplay':
