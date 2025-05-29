@@ -211,12 +211,20 @@ def tmdb_manager_choice(params):
 	
 	display_lines = [item['line1'] for item in dialog_choices]
 	kwargs = {'items': json.dumps([{'line1': line} for line in display_lines]), 'heading': 'TMDB List Manager'}
-	selected_index = select_dialog(display_lines, **kwargs)
+	selected_index_value = select_dialog(display_lines, **kwargs)
 
-	if selected_index is None or selected_index == -1:
+	if selected_index_value is None: # User cancelled the dialog
 		return
 
-	action_type = dialog_choices[selected_index]['action']
+	try:
+		# Find the index of the selected_index_value in display_lines
+		actual_index = display_lines.index(selected_index_value)
+	except ValueError:
+		# Handle error: selected_index_value not in display_lines
+		notification("Error: Selection not recognized.", 3000) # kodi_utils.notification is available
+		return
+
+	action_type = dialog_choices[actual_index]['action']
 
 	if action_type in ['add', 'remove']:
 		user_lists_response = tmdb_api.get_lists() # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
