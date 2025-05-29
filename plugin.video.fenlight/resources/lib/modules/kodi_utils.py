@@ -35,13 +35,13 @@ extras_button_label_values = {
 				'movie':
 					{'movies_play': 'Playback', 'show_trailers': 'Trailer', 'show_images': 'Images',  'show_extrainfo': 'Extra Info', 'show_genres': 'Genres',
 					'show_director': 'Director', 'show_options': 'Options', 'show_recommended': 'Recommended', 'show_more_like_this': 'More Like This',
-					'show_trakt_manager': 'Trakt Manager', 'playback_choice': 'Playback Options', 'show_favorites_manager': 'Favorites Manager', 'show_plot': 'Plot',
-					'show_keywords': 'Keywords', 'show_in_trakt_lists': 'In Trakt Lists', 'close_all': 'Close All Dialogs'},
+					'show_tmdb_manager': 'TMDB Manager', 'playback_choice': 'Playback Options', 'show_favorites_manager': 'Favorites Manager', 'show_plot': 'Plot',
+					'show_keywords': 'Keywords', 'show_in_tmdb_lists': 'In TMDB Lists', 'close_all': 'Close All Dialogs'},
 				'tvshow':
 					{'tvshow_browse': 'Browse', 'show_trailers': 'Trailer', 'show_images': 'Images', 'show_extrainfo': 'Extra Info', 'show_genres': 'Genres',
 					'play_nextep': 'Play Next', 'show_options': 'Options', 'show_recommended': 'Recommended', 'show_more_like_this': 'More Like This',
-					'show_trakt_manager': 'Trakt Manager', 'play_random_episode': 'Play Random', 'show_favorites_manager': 'Favorites Manager', 'show_plot': 'Plot',
-					'show_keywords': 'Keywords', 'show_in_trakt_lists': 'In Trakt Lists', 'close_all': 'Close All Dialogs'}}
+					'show_tmdb_manager': 'TMDB Manager', 'play_random_episode': 'Play Random', 'show_favorites_manager': 'Favorites Manager', 'show_plot': 'Plot',
+					'show_keywords': 'Keywords', 'show_in_tmdb_lists': 'In TMDB Lists', 'close_all': 'Close All Dialogs'}}
 video_extensions = ('m4v', '3g2', '3gp', 'nsv', 'tp', 'ts', 'ty', 'pls', 'rm', 'rmvb', 'mpd', 'ifo', 'mov', 'qt', 'divx', 'xvid', 'bivx', 'vob', 'nrg', 'img', 'iso', 'udf', 'pva',
 					'wmv', 'asf', 'asx', 'ogm', 'm2v', 'avi', 'bin', 'dat', 'mpg', 'mpeg', 'mp4', 'mkv', 'mk3d', 'avc', 'vp3', 'svq3', 'nuv', 'viv', 'dv', 'fli', 'flv', 'wpl',
 					'xspf', 'vdr', 'dvr-ms', 'xsp', 'mts', 'm2t', 'm2ts', 'evo', 'ogv', 'sdp', 'avs', 'rec', 'url', 'pxml', 'vc1', 'h264', 'rcv', 'rss', 'mpls', 'mpl', 'webm',
