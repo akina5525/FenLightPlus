@@ -1,3 +1,6 @@
+v2.2.15
+- Fixed TypeError in TMDB Manager when accessing selected list details.
+
 v2.2.14
 - Fixed TypeError in TMDB Manager when fetching user lists.
 

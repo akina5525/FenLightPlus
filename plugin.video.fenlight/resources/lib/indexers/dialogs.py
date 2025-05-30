@@ -227,7 +227,7 @@ def tmdb_manager_choice(params):
 	action_type = dialog_choices[actual_index]['action']
 
 	if action_type in ['add', 'remove']:
-		user_lists_response = tmdb_api.get_lists(list_type='my_lists',1) # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
+		user_lists_response = tmdb_api.get_lists(list_type='my_lists') # Assumes get_lists doesn't need page_number for this interaction, or fetches all.
 		if not user_lists_response or 'results' not in user_lists_response or not user_lists_response['results']:
 			ok_dialog(text='No TMDB lists found or error fetching lists.')
 			return
@@ -237,13 +237,22 @@ def tmdb_manager_choice(params):
 		
 		heading_text = 'Select TMDB List to Add To' if action_type == 'add' else 'Select TMDB List to Remove From'
 		list_kwargs = {'items': json.dumps([{'line1': item['line1']} for item in list_display_items]), 'heading': heading_text}
-		chosen_list_index = select_dialog([item['line1'] for item in list_display_items], **list_kwargs)
+		# select_dialog returns the actual value of 'line1' (the name of the list)
+		chosen_list_name = select_dialog([item['line1'] for item in list_display_items], **list_kwargs)
 
-		if chosen_list_index is None or chosen_list_index == -1:
+		if chosen_list_name is None: # User cancelled the dialog
+			return
+
+		# Find the selected list item from list_display_items based on the chosen name
+		selected_list_item = next((item for item in list_display_items if item['line1'] == chosen_list_name), None)
+
+		if selected_list_item is None:
+			# This case should ideally not happen if select_dialog returns a valid name from the provided list
+			notification("Error: Could not find the selected list details.", 3000) # Assuming kodi_utils.notification is available
 			return
 			
-		selected_list_id = list_display_items[chosen_list_index]['id']
-		selected_list_name = list_display_items[chosen_list_index]['line1']
+		selected_list_id = selected_list_item['id']
+		selected_list_name = selected_list_item['line1'] # This is essentially chosen_list_name
 
 		# Confirmation before add/remove
 		confirm_text_action = "Add" if action_type == 'add' else "Remove"
