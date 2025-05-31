@@ -1,3 +1,6 @@
+[B]Version 2.2.19[/B] - 2025-05-31
+- Update main.yml
+
 v2.2.18
 - Fixed AttributeError and logic for creating new TMDB lists.
 
