@@ -1,3 +1,6 @@
+v2.2.16
+- Added director's name to the movie extras screen.
+
 v2.2.15
 - Fixed TypeError in TMDB Manager when accessing selected list details.
 

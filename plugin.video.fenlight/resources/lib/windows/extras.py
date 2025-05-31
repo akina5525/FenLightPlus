@@ -784,8 +784,23 @@ class Extras(BaseDialog):
 		return status_str
 
 	def set_infoline1(self, remove_rating=False):
-		self.set_label(2001, separator.join([i for i in (self.year, None if remove_rating else self.rating, self.mpaa, self.spoken_language,
-											self.get_duration(), self.status_infoline_value) if i]))
+		director_list = self.meta_get('director', [])
+		director_info = None
+		if self.media_type == 'movie' and director_list: # Only show for movies
+			director_name = director_list[0]
+			if director_name: # Ensure director_name is not empty
+				director_info = 'Director: %s' % director_name
+
+		info_parts = [
+			self.year,
+			None if remove_rating else self.rating,
+			self.mpaa,
+			director_info, # Add director info here
+			self.spoken_language,
+			self.get_duration(),
+			self.status_infoline_value
+		]
+		self.set_label(2001, separator.join([i for i in info_parts if i]))
 
 	def set_infoline2(self):
 		if self.media_type == 'movie':
