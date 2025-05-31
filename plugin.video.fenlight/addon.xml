@@ -1,8 +1,8 @@
-<addon id="plugin.video.fenlight" name="Fen Light+" provider-name="Tikipeter/thejason40" version="2.2.19">
+<addon id="plugin.video.fenlight" name="Fen Light+" provider-name="Tikipeter/thejason40" version="2.2.20">
 
     <requires>
-        <import addon="xbmc.python" version="2.2.19"/>
-        <import addon="script.module.requests" version="2.2.19"/>
+        <import addon="xbmc.python" version="2.2.20"/>
+        <import addon="script.module.requests" version="2.2.20"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="resources/lib/fenlight.py">
         <provides>video</provides>
