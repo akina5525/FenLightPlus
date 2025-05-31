@@ -278,12 +278,12 @@ def tmdb_manager_choice(params):
 		# The existing tmdb_api.new_tmdb_list(False, params) seems to be for a different flow.
 		# The new requirement is tmdb_api.new_tmdb_list(name, description)
 		# I will use dialog.input for name and description.
-		new_list_name = dialog.input('Enter New List Name')
+		new_list_name = dialog().input('Enter New List Name')
 		if not new_list_name:
 			notification('Cancelled', 1500)
 			return
 		
-		new_list_description = dialog.input('Enter List Description (Optional)')
+		new_list_description = dialog().input('Enter List Description (Optional)')
 		# Assuming tmdb_api.create_list is the correct function name for this based on my plan.
 		# If it's new_tmdb_list, its signature needs to be name, description.
 		# Let's assume tmdb_api.create_list exists or will be created with this signature.
