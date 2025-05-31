@@ -123,9 +123,30 @@ class Extras(BaseDialog):
 				self.new_params = {'mode': 'person_data_dialog', 'key_id': chosen_var, 'reference_tmdb_id': self.tmdb_id, 'is_external': self.is_external, 'stacked': 'true'}
 				return window_manager(self)
 			elif self.control_id == videos_id:
-				self.set_current_params(set_starting_position=False)
-				self.window_player_url = youtube_url % chosen_var
-				return window_player(self)
+				chosen_listitem = self.get_listitem(self.control_id) # Get the full listitem
+				is_direct_link = chosen_listitem.getProperty('is_direct_link') == 'true'
+				if is_direct_link:
+					direct_url = chosen_listitem.getProperty('direct_url')
+					if direct_url:
+						try:
+							import xbmc # Try direct import first
+						except ImportError:
+							from modules import kodi_utils # Fallback to kodi_utils
+							xbmc = kodi_utils.xbmc
+						xbmc.Player().play(direct_url)
+						return
+				else:
+					# Fallback to YouTube playback logic
+					if not self.youtube_installed_check():
+						return self.notification('Youtube Plugin needed for playback')
+					youtube_key = chosen_listitem.getProperty('key_id')
+					if youtube_key:
+						self.set_current_params(set_starting_position=False)
+						self.window_player_url = youtube_url % youtube_key
+						return window_player(self)
+					else:
+						# This case should ideally not happen if builder filters correctly
+						return self.notification('No video link found for this item.')
 			elif self.control_id in text_list_ids:
 				if self.control_id == parentsguide_id: return self.show_text_media(text=chosen_var)
 				else: return self.select_item(self.control_id, self.show_text_media(text=self.get_attribute(self, chosen_var), current_index=position))
@@ -362,12 +383,12 @@ class Extras(BaseDialog):
 
 	def make_videos(self):
 		if not videos_id in self.enabled_lists: return
-		if not self.youtube_installed_check(): return
+		# Removed youtube_installed_check() from here
 		def _sort_trailers(trailers):
-			official_trailers = [i for i in trailers if i['official'] and i['type'] == 'Trailer' and 'official trailer' in i['name'].lower()]
-			other_official_trailers = [i for i in trailers if i['official'] and i['type'] == 'Trailer' and not i in official_trailers]
-			other_trailers = [i for i in trailers if i['type'] == 'Trailer' and not i in official_trailers  and not i in other_official_trailers]
-			teaser_trailers = [i for i in trailers if i['type'] == 'Teaser']
+			official_trailers = [i for i in trailers if i.get('official') and i.get('type') == 'Trailer' and 'official trailer' in i.get('name', '').lower()]
+			other_official_trailers = [i for i in trailers if i.get('official') and i.get('type') == 'Trailer' and not i in official_trailers]
+			other_trailers = [i for i in trailers if i.get('type') == 'Trailer' and not i in official_trailers  and not i in other_official_trailers]
+			teaser_trailers = [i for i in trailers if i.get('type') == 'Teaser']
 			full_trailers = official_trailers + other_official_trailers + other_trailers + teaser_trailers
 			features = [i for i in trailers if not i in full_trailers]
 			return full_trailers + features
@@ -375,17 +396,39 @@ class Extras(BaseDialog):
 			for item in all_trailers:
 				try:
 					listitem = self.make_listitem()
-					key = item['key']
-					listitem.setProperty('name', item['name'])
-					listitem.setProperty('thumbnail', youtube_thumb_url % key)
-					listitem.setProperty('key_id', key)
+					item_name = item.get('name', 'Unnamed Video')
+					listitem.setProperty('name', item_name)
+
+					direct_url = item.get('url')
+					youtube_key = item.get('key')
+					thumbnail = item.get('thumbnail', '')
+
+					if direct_url and isinstance(direct_url, str) and direct_url.lower().endswith('.mp4'):
+						listitem.setProperty('is_direct_link', 'true')
+						listitem.setProperty('direct_url', direct_url)
+						# Use provided thumbnail, or a generic one if missing for direct links
+						listitem.setProperty('thumbnail', thumbnail or get_icon('play'))
+					elif youtube_key:
+						listitem.setProperty('is_direct_link', 'false')
+						listitem.setProperty('key_id', youtube_key)
+						listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
+					else:
+						# Skip item if it has neither a direct_url nor a youtube_key
+						continue
 					yield listitem
 				except: pass
 		try:
-			all_trailers = _sort_trailers(self.meta_get('all_trailers', []))
+			all_trailers_data = self.meta_get('all_trailers', [])
+			if not all_trailers_data: # If all_trailers is empty or None, don't proceed
+				self.setProperty('youtube_videos.number', count_insert % 0)
+				self.add_items(videos_id, [])
+				return
+
+			all_trailers = _sort_trailers(all_trailers_data)
 			item_list = list(builder())
 			self.setProperty('youtube_videos.number', count_insert % len(item_list))
-			self.item_action_dict[videos_id] = 'key_id'
+			# Default action key, onClick will check properties to decide actual action
+			self.item_action_dict[videos_id] = 'name' # Using 'name' as a placeholder, actual value used depends on properties
 			self.add_items(videos_id, item_list)
 		except: pass
 
@@ -572,10 +615,23 @@ class Extras(BaseDialog):
 		return self.show_text_media(text=self.plot)
 
 	def show_trailers(self):
-		if not self.youtube_installed_check(): return self.notification('Youtube Plugin needed for playback')
-		self.set_current_params(set_starting_position=False)
-		self.window_player_url = self.meta_get('trailer')
-		return window_player(self)
+		trailer_url = self.meta_get('trailer')
+		if trailer_url and isinstance(trailer_url, str) and trailer_url.lower().endswith('.mp4'):
+			# It's a direct video link
+			try:
+				import xbmc # Try direct import first
+			except ImportError:
+				from modules import kodi_utils # Fallback to kodi_utils
+				xbmc = kodi_utils.xbmc
+			xbmc.Player().play(trailer_url)
+			return
+		else:
+			# Fallback to YouTube playback
+			if not self.youtube_installed_check():
+				return self.notification('Youtube Plugin needed for playback')
+			self.set_current_params(set_starting_position=False)
+			self.window_player_url = trailer_url # Use the already fetched trailer_url
+			return window_player(self)
 
 	def show_images(self):
 		return _images({'mode': 'tmdb_media_image_results', 'media_type': self.media_type, 'tmdb_id': self.tmdb_id, 'rootname': self.rootname})
