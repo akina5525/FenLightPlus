@@ -275,35 +275,32 @@ def tmdb_manager_choice(params):
 			ok_dialog(text='%s failed. %s' % (confirm_text_action.capitalize(), error_msg))
 
 	elif action_type == 'create':
-		# The existing tmdb_api.new_tmdb_list(False, params) seems to be for a different flow.
-		# The new requirement is tmdb_api.new_tmdb_list(name, description)
-		# I will use dialog.input for name and description.
-		new_list_name = dialog().input('Enter New List Name')
-		if not new_list_name:
-			notification('Cancelled', 1500)
-			return
-		
-		new_list_description = dialog().input('Enter List Description (Optional)')
-		# Assuming tmdb_api.create_list is the correct function name for this based on my plan.
-		# If it's new_tmdb_list, its signature needs to be name, description.
-		# Let's assume tmdb_api.create_list exists or will be created with this signature.
-		creation_result = tmdb_api.create_list(name=new_list_name, description=new_list_description)
+		# tmdb_api.new_tmdb_list() handles its own dialog input for the list name
+		# and returns dict {'list_title': title, 'list_id': id} or None if cancelled.
+		creation_result = tmdb_api.new_tmdb_list() # Call the correct function
 
-		if creation_result and creation_result.get('success'):
-			new_list_id = creation_result.get('id')
-			notification('List "%s" created successfully.' % new_list_name, 2000)
-			
-			if new_list_id and yes_no_dialog(heading='Add Item', text='Add %s to "%s"?' % (item_title, new_list_name)):
-				items_payload = [{'media_type': tmdb_api_media_type, 'media_id': tmdb_id}]
-				add_result = tmdb_api.add_remove('add', items_payload, new_list_id)
-				if add_result and add_result.get('success'):
-					notification('Item added to "%s".' % new_list_name, 2000)
-				else:
-					error_msg = add_result.get('status_message', 'Unknown error.') if add_result else 'Unknown error.'
-					ok_dialog(text='Failed to add item. %s' % error_msg)
-		else:
-			error_msg = creation_result.get('status_message', 'Unknown error.') if creation_result else 'Unknown error.'
-			ok_dialog(text='Failed to create list. %s' % error_msg)
+		if creation_result: # new_tmdb_list returns None if user cancels input
+			new_list_id = creation_result.get('list_id')
+			new_list_name = creation_result.get('list_title') # Get the name from the result
+
+			# new_tmdb_list already shows "List Created" or "Error" notification.
+			# It also handles kodi_refresh.
+			# We only need to proceed if a list_id was successfully returned.
+			if new_list_id: # Check if list_id is valid
+				if yes_no_dialog(heading='Add Item', text='Add %s to "%s"?' % (item_title, new_list_name)):
+					items_payload = [{'media_type': tmdb_api_media_type, 'media_id': tmdb_id}]
+					# Assuming tmdb_api.add_remove returns a dict like {'success': True/False, 'status_message': '...'}
+					# or None/True/False based on previous usage. Let's stick to dict assumption for now.
+					add_result = tmdb_api.add_remove('add', items_payload, new_list_id)
+					if add_result and add_result.get('success'): # Check success from add_remove
+						notification('Item added to "%s".' % new_list_name, 2000)
+					elif add_result: # If add_result is a dict but not successful
+						error_msg = add_result.get('status_message', 'Unknown error adding item.')
+						ok_dialog(text='Failed to add item. %s' % error_msg)
+					else: # If add_result is None or other non-True, non-dict value
+						ok_dialog(text='Failed to add item to the new list.')
+		# If creation_result is None, new_tmdb_list() already showed a 'Cancelled' notification.
+		# No further 'else' needed here for failed creation as new_tmdb_list handles its own error notifications.
 
 def trakt_trakt_to_tmdb_choice(params, choices = []):
 	

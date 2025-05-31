@@ -1,3 +1,6 @@
+v2.2.18
+- Fixed AttributeError and logic for creating new TMDB lists.
+
 v2.2.17
 - Fixed AttributeError when creating a new TMDB list due to incorrect dialog call.
 
