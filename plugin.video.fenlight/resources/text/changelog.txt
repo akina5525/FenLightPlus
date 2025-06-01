@@ -1,3 +1,8 @@
+[B]Version 2.2.26[/B] - 2025-06-01
+- Merge pull request #13 from akina5525/feat/add-awards-section
+
+Fix: Correct logger calls for Awards section debugging
+
 [B]Version 2.2.25[/B] - 2025-06-01
 - Merge pull request #12 from akina5525/feat/add-awards-section
 
