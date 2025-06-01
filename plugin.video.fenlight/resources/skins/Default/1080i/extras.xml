@@ -148,14 +148,32 @@
                 <left>50</left>
                 <control type="group">
                     <animation effect="slide" end="0,25" time="0" condition="String.IsEqual(Window.Property(display_extra_ratings),false)">Conditional</animation>
-                    <!-- Line 1 -->
-                    <control type="label">
-                        <width max="1150">auto</width>
-                        <height>25</height>
-                        <font>font14</font> <!-- FENLIGHT_33 -->
-                        <textcolor>FFCCCCCC</textcolor>
-                        <align>center</align>
-                        <label>[I]$INFO[Window.Property(genre)][/I]</label>
+                    <!-- Line 1 - Genre and Awards -->
+                    <control type="grouplist">
+                        <left>0</left> <!-- Adjust as needed -->
+                        <top>0</top> <!-- Adjust as needed, original label had no specific top, inherited from parent group -->
+                        <width>1150</width> <!-- Max width for the grouplist -->
+                        <height>25</height> <!-- Height for the labels -->
+                        <orientation>horizontal</orientation>
+                        <align>center</align> <!-- Center the grouplist itself -->
+                        <itemgap>10</itemgap> <!-- Gap between genre and awards -->
+                        <control type="label">
+                            <width min="50" max="500">auto</width> <!-- Adjusted width, min/max values might need tuning -->
+                            <height>25</height>
+                            <font>font14</font> <!-- FENLIGHT_33 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align> <!-- Align text to the left within its allocated space -->
+                            <label>[I]$INFO[Window.Property(genre)][/I]</label>
+                        </control>
+                        <control type="label">
+                            <width min="50" max="600">auto</width> <!-- Adjusted width, min/max values might need tuning -->
+                            <height>25</height>
+                            <font>font14</font> <!-- FENLIGHT_33 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align> <!-- Align text to the left -->
+                            <label>$INFO[Window.Property(awards)]</label>
+                            <visible>!String.IsEmpty(Window.Property(awards))</visible> <!-- Only show if awards property is not empty -->
+                        </control>
                     </control>
                     <!-- Line 2 -->
                     <control type="label" id="2001">
