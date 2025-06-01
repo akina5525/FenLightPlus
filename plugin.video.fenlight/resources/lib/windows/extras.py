@@ -67,9 +67,9 @@ class Extras(BaseDialog):
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
-		logger(f'extras.py: onInit - self.tasks: {[task.__name__ for task in self.tasks]}')
+		logger("extras.py", f'onInit - self.tasks: {[task.__name__ for task in self.tasks]}')
 		for i in self.tasks:
-			logger(f'extras.py: onInit - Starting task: {i.__name__}')
+			logger("extras.py", f'onInit - Starting task: {i.__name__}')
 			Thread(target=i).start()
 		self.set_default_focus()
 		if self.starting_position:
