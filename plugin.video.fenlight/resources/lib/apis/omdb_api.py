@@ -24,8 +24,8 @@ class OMDbAPI:
 		logger("omdb_api.py", f'process_result - raw self.result from get_result: {self.result}')
 		if not self.result: return {}
 		self.result_get = self.result.get
-		# Fetch awards_value using 'Awards' as key
-		awards_value = self.process_rating('Awards')
+		# Fetch awards_value using 'awards' (lowercase) as key for process_rating, as self.result uses lowercase.
+		awards_value = self.process_rating('awards')
 		logger("omdb_api.py", f'process_result - fetched awards_value: {awards_value}')
 		metascore_rating, tomatometer_rating, tomatousermeter_rating = self.process_rating('metascore'), self.process_rating('tomatoMeter'), self.process_rating('tomatoUserMeter')
 		imdb_rating, tomato_image = self.process_rating('imdbRating'), self.process_rating('tomatoImage')
