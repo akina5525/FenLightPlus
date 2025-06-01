@@ -1,3 +1,6 @@
+[B]Version 2.2.33[/B] - 2025-06-01
+- ignore file
+
 [B]Version 2.2.32[/B] - 2025-06-01
 - Merge pull request #19 from akina5525/feat/show-awards-in-extras
 
