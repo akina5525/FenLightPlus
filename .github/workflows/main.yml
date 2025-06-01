@@ -31,7 +31,7 @@ jobs:
           echo "$NEW_VERSION" > packages/fen_light_version
 
           # Update version in addon.xml
-          sed -i "s/version=\"[^\"]*\"/version=\"$NEW_VERSION\"/" plugin.video.fenlight/addon.xml
+          sed -i "/<addon /s/version=\"[^\"]*\"/version=\"$NEW_VERSION\"/" plugin.video.fenlight/addon.xml
 
           # Get last commit message
           COMMIT_MSG=$(git log -1 --pretty=%B)
