@@ -13,7 +13,7 @@ from modules.utils import change_image_resolution, adjust_premiered_date, get_da
 from modules.meta_lists import networks, movie_genres, tvshow_genres
 from modules.metadata import movieset_meta, episodes_meta, movie_meta, tvshow_meta
 from modules.episode_tools import EpisodeTools
-# logger = kodi_utils.logger
+logger = kodi_utils.logger
 
 get_icon, close_all_dialog = kodi_utils.get_icon, kodi_utils.close_all_dialog
 addon_fanart, empty_poster = kodi_utils.addon_fanart(), kodi_utils.empty_poster
@@ -67,7 +67,10 @@ class Extras(BaseDialog):
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
-		for i in self.tasks: Thread(target=i).start()
+		logger(f'extras.py: onInit - self.tasks: {[task.__name__ for task in self.tasks]}')
+		for i in self.tasks:
+			logger(f'extras.py: onInit - Starting task: {i.__name__}')
+			Thread(target=i).start()
 		self.set_default_focus()
 		if self.starting_position:
 			try: self.set_returning_focus(*self.starting_position)
@@ -488,14 +491,18 @@ class Extras(BaseDialog):
 	def make_awards(self):
 		awards_id = 2064
 		if not awards_id in self.enabled_lists: return
+		logger('extras.py: make_awards started')
 		try:
 			item_list = []
+			processed_awards_list = []
 			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
+			logger(f'extras.py: make_awards - raw awards_string: {awards_string}')
 			if awards_string and awards_string != "N/A":
-				awards_list_processed = [i.strip() for i in awards_string.split('. ') if i.strip()]
-				if awards_list_processed:
+				processed_awards_list = [i.strip() for i in awards_string.split('. ') if i.strip()]
+				logger(f'extras.py: make_awards - processed_awards_list: {processed_awards_list}')
+				if processed_awards_list:
 					def builder():
-						for item in awards_list_processed:
+						for item in processed_awards_list:
 							try:
 								listitem = self.make_listitem()
 								listitem.setProperty('name', item)
@@ -504,17 +511,24 @@ class Extras(BaseDialog):
 					item_list = list(builder())
 
 			if not item_list:
+				logger('extras.py: make_awards - No awards found path taken')
 				listitem = self.make_listitem()
 				listitem.setProperty('name', "No awards found")
 				item_list.append(listitem)
+				logger(f'extras.py: make_awards - About to set awards.number, item_list length: {len(item_list)}')
 				self.setProperty('awards.number', 'x1') # Display x1 for "No awards found"
+				logger(f'extras.py: make_awards - awards.number set to: {self.getProperty("awards.number")}')
 			else:
+				logger('extras.py: make_awards - Actual awards path taken')
+				logger(f'extras.py: make_awards - About to set awards.number, item_list length: {len(item_list)}')
 				self.setProperty('awards.number', count_insert % len(item_list))
+				logger(f'extras.py: make_awards - awards.number set to: {self.getProperty("awards.number")}')
 
+			logger(f'extras.py: make_awards - About to add {len(item_list)} items to control {awards_id}')
 			self.add_items(awards_id, item_list)
-		except:
-			# In case of any exception, try to display "No awards found"
-			# This is a fallback, ideally specific exceptions should be handled if possible
+			logger('extras.py: make_awards - Items added')
+		except Exception as e:
+			logger(f'extras.py: make_awards - EXCEPTION: {e}', 'error')
 			try:
 				item_list = []
 				listitem = self.make_listitem()
@@ -523,7 +537,7 @@ class Extras(BaseDialog):
 				self.setProperty('awards.number', 'x1')
 				self.add_items(awards_id, item_list)
 			except:
-				self.setProperty('awards.number', 'x0') # Final fallback if creating listitem fails
+				self.setProperty('awards.number', 'x0')
 
 	def make_collection(self):
 		if self.media_type != 'movie': return

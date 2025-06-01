@@ -293,99 +293,6 @@
                         </control>
                     </control>
                 </control>
-                <!-- Awards 2064 -->
-                <control type="group">
-                    <visible>Integer.IsGreater(Container(2064).NumItems,0)</visible>
-                    <height>760</height>
-                    <control type="group">
-                        <control type="label">
-                            <width max="1160">auto</width>
-                            <height>20</height>
-                            <font>font14</font> <!-- FENLIGHT_33 -->
-                            <textcolor>FFCCCCCC</textcolor>
-                            <align>left</align>
-                            <aligny>bottom</aligny>
-                            <label>[B]Awards $INFO[Window.Property(awards.number)][/B]</label>
-                        </control>
-                        <control type="panel" id="2064">
-                            <pagecontrol>4064</pagecontrol>
-                            <top>60</top>
-                            <width>1180</width>
-                            <height>360</height>
-                            <onup>2063</onup> <!-- Or previous relevant control ID -->
-                            <ondown>4064</ondown> <!-- Scrollbar for this list -->
-                            <orientation>horizontal</orientation>
-                            <scrolltime tween="sine">500</scrolltime>
-                            <itemlayout height="380" width="590">
-                                <control type="image">
-                                    <height>360</height>
-                                    <width>580</width>
-                                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
-                                </control>
-                                <control type="textbox">
-                                    <top>15</top>
-                                    <left>20</left>
-                                    <width>540</width>
-                                    <height>308</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
-                                    <align>center</align>
-                                    <aligny>top</aligny>
-                                    <textcolor>FFCCCCCC</textcolor>
-                                    <label>$INFO[ListItem.Property(name)]</label>
-                                    <autoscroll>false</autoscroll>
-                                </control>
-                            </itemlayout>
-                            <focusedlayout height="380" width="590">
-                                <control type="image">
-                                    <height>360</height>
-                                    <width>580</width>
-                                    <texture colordiffuse="FFB7B4BB" border="30">fenlight_common/circle.png</texture>
-                                </control>
-                                <control type="textbox">
-                                    <top>15</top>
-                                    <left>20</left>
-                                    <width>540</width>
-                                    <height>308</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
-                                    <align>center</align>
-                                    <aligny>top</aligny>
-                                    <textcolor>FF1F2020</textcolor>
-                                    <label>$INFO[ListItem.Property(name)]</label>
-                                    <autoscroll>false</autoscroll>
-                                </control>
-                            </focusedlayout>
-                        </control>
-                        <control type="scrollbar" id="4064">
-                            <top>432</top>
-                            <width>1170</width>
-                            <height>15</height>
-                            <onup>2064</onup>
-                            <ondown>10</ondown> <!-- Or next relevant control ID / first button -->
-                            <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
-                            <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
-                            <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
-                            <showonepage>false</showonepage>
-                            <orientation>Horizontal</orientation>
-                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2064) | Control.HasFocus(4064)]</visible>
-                        </control>
-                        <control type="image">
-                            <top>225</top>
-                            <left>20</left>
-                            <width>25</width>
-                            <height>25</height>
-                            <texture colordiffuse="FFCCCCCC" background="true">fenlight_common/arrow_left.png</texture>
-                            <visible>[Control.HasFocus(2064) | Control.HasFocus(4064)] + Container(2064).HasPrevious</visible>
-                        </control>
-                        <control type="image">
-                            <top>225</top>
-                            <left>1125</left>
-                            <width>25</width>
-                            <height>25</height>
-                            <texture colordiffuse="FFCCCCCC" background="true" flipx="true">fenlight_common/arrow_left.png</texture>
-                            <visible>[Control.HasFocus(2064) | Control.HasFocus(4064)] + Container(2064).HasNext</visible>
-                        </control>
-                    </control>
-                </control>
                 </control>
             </control>
             <!-- Body -->
@@ -410,7 +317,7 @@
                             <height>70</height>
                             <onleft>13</onleft>
                             <onright>11</onright>
-                            <onup>2063</onup>
+                            <onup>2064</onup>
                             <ondown>14</ondown>
                             <label>$INFO[Window.Property(button10.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -427,7 +334,7 @@
                             <height>70</height>
                             <onleft>10</onleft>
                             <onright>12</onright>
-                            <onup>2063</onup>
+                            <onup>2064</onup>
                             <ondown>15</ondown>
                             <label>$INFO[Window.Property(button11.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -444,7 +351,7 @@
                             <height>70</height>
                             <onleft>11</onleft>
                             <onright>13</onright>
-                            <onup>2063</onup>
+                            <onup>2064</onup>
                             <ondown>16</ondown>
                             <label>$INFO[Window.Property(button12.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -461,7 +368,7 @@
                             <height>70</height>
                             <onleft>12</onleft>
                             <onright>10</onright>
-                            <onup>2063</onup>
+                            <onup>2064</onup>
                             <ondown>17</ondown>
                             <label>$INFO[Window.Property(button13.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -542,6 +449,99 @@
                             <texturenofocus colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texturenofocus>
                             <align>center</align>
                             <aligny>center</aligny>
+                        </control>
+                    </control>
+                </control>
+                <!-- Awards 2064 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2064).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font14</font> <!-- FENLIGHT_33 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]Awards $INFO[Window.Property(awards.number)][/B]</label>
+                        </control>
+                        <control type="panel" id="2064">
+                            <pagecontrol>4064</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>4063</onup> <!-- Scrollbar of More From Collection -->
+                            <ondown>4064</ondown> <!-- Scrollbar for this list -->
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>580</width>
+                                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>20</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font12</font> <!-- FENLIGHT_26 -->
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>FFCCCCCC</textcolor>
+                                    <label>$INFO[ListItem.Property(name)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>580</width>
+                                    <texture colordiffuse="FFB7B4BB" border="30">fenlight_common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>20</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font12</font> <!-- FENLIGHT_26 -->
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>FF1F2020</textcolor>
+                                    <label>$INFO[ListItem.Property(name)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4064">
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2064</onup>
+                            <ondown>10</ondown> <!-- First button of main action buttons -->
+                            <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
+                            <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2064) | Control.HasFocus(4064)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>225</top>
+                            <left>20</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <texture colordiffuse="FFCCCCCC" background="true">fenlight_common/arrow_left.png</texture>
+                            <visible>[Control.HasFocus(2064) | Control.HasFocus(4064)] + Container(2064).HasPrevious</visible>
+                        </control>
+                        <control type="image">
+                            <top>225</top>
+                            <left>1125</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <texture colordiffuse="FFCCCCCC" background="true" flipx="true">fenlight_common/arrow_left.png</texture>
+                            <visible>[Control.HasFocus(2064) | Control.HasFocus(4064)] + Container(2064).HasNext</visible>
                         </control>
                     </control>
                 </control>
