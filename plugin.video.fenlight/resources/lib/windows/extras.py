@@ -13,7 +13,7 @@ from modules.utils import change_image_resolution, adjust_premiered_date, get_da
 from modules.meta_lists import networks, movie_genres, tvshow_genres
 from modules.metadata import movieset_meta, episodes_meta, movie_meta, tvshow_meta
 from modules.episode_tools import EpisodeTools
-logger = kodi_utils.logger
+# logger = kodi_utils.logger # Commented out as no specific logger calls will remain after this subtask for this file.
 
 get_icon, close_all_dialog = kodi_utils.get_icon, kodi_utils.close_all_dialog
 addon_fanart, empty_poster = kodi_utils.addon_fanart(), kodi_utils.empty_poster
@@ -63,13 +63,13 @@ class Extras(BaseDialog):
 		self.set_properties()
 		self.tasks = (self.set_artwork, self.set_infoline1, self.set_infoline2, self.make_ratings, self.make_cast, self.make_recommended,
 					self.make_more_like_this, self.make_reviews, self.make_comments, self.make_in_lists, self.make_trivia, self.make_blunders, self.make_parentsguide,
-					self.make_videos, self.make_year, self.make_genres, self.make_network, self.make_collection, self.make_awards)
+					self.make_videos, self.make_year, self.make_genres, self.make_network, self.make_collection) # Removed self.make_awards
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
-		logger("extras.py", f'onInit - self.tasks: {[task.__name__ for task in self.tasks]}')
+		# logger("extras.py", f'onInit - self.tasks: {[task.__name__ for task in self.tasks]}') # Removed
 		for i in self.tasks:
-			logger("extras.py", f'onInit - Starting task: {i.__name__}')
+			# logger("extras.py", f'onInit - Starting task: {i.__name__}') # Removed
 			Thread(target=i).start()
 		self.set_default_focus()
 		if self.starting_position:
@@ -204,14 +204,14 @@ class Extras(BaseDialog):
 
 	def make_plot_and_tagline(self):
 		self.plot = self.meta_get('tvshow_plot', '') or self.meta_get('plot', '') or ''
-		logger("extras.py", f"make_plot_and_tagline - Initial plot: {self.plot}")
+		# logger("extras.py", f"make_plot_and_tagline - Initial plot: {self.plot}") # Removed
 		awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-		logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}")
+		# logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
 		if awards_string and awards_string != 'N/A':
 			self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}"
-			logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}")
-		else:
-			logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A")
+			# logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}") # Removed
+		# else: # Removed logger for this path too
+			# logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
 		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
 		self.tagline = self.meta_get('tagline') or ''
 		if self.tagline: self.plot = '[I]%s[/I][CR][CR]%s' % (self.tagline, self.plot)
@@ -495,57 +495,6 @@ class Extras(BaseDialog):
 			self.item_action_dict[networks_id] = 'tmdb_id'
 			self.add_items(networks_id, item_list)
 		except: pass
-
-	def make_awards(self):
-		awards_id = 2064
-		if not awards_id in self.enabled_lists: return
-		logger("extras.py", 'make_awards started')
-		try:
-			item_list = []
-			processed_awards_list = []
-			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-			logger("extras.py", f'make_awards - raw awards_string: {awards_string}')
-			if awards_string and awards_string != "N/A":
-				processed_awards_list = [i.strip() for i in awards_string.split('. ') if i.strip()]
-				logger("extras.py", f'make_awards - processed_awards_list: {processed_awards_list}')
-				if processed_awards_list:
-					def builder():
-						for item in processed_awards_list:
-							try:
-								listitem = self.make_listitem()
-								listitem.setProperty('name', item)
-								yield listitem
-							except: pass
-					item_list = list(builder())
-
-			if not item_list:
-				logger("extras.py", 'make_awards - No awards found path taken')
-				listitem = self.make_listitem()
-				listitem.setProperty('name', "No awards found")
-				item_list.append(listitem)
-				logger("extras.py", f'make_awards - About to set awards.number, item_list length: {len(item_list)}')
-				self.setProperty('awards.number', 'x1') # Display x1 for "No awards found"
-				logger("extras.py", f'make_awards - awards.number set to: {self.getProperty("awards.number")}')
-			else:
-				logger("extras.py", 'make_awards - Actual awards path taken')
-				logger("extras.py", f'make_awards - About to set awards.number, item_list length: {len(item_list)}')
-				self.setProperty('awards.number', count_insert % len(item_list))
-				logger("extras.py", f'make_awards - awards.number set to: {self.getProperty("awards.number")}')
-
-			logger("extras.py", f'make_awards - About to add {len(item_list)} items to control {awards_id}')
-			self.add_items(awards_id, item_list)
-			logger("extras.py", 'make_awards - Items added')
-		except Exception as e:
-			logger("extras.py", f'make_awards - EXCEPTION: {e}')
-			try:
-				item_list = []
-				listitem = self.make_listitem()
-				listitem.setProperty('name', "No awards found")
-				item_list.append(listitem)
-				self.setProperty('awards.number', 'x1')
-				self.add_items(awards_id, item_list)
-			except:
-				self.setProperty('awards.number', 'x0')
 
 	def make_collection(self):
 		if self.media_type != 'movie': return
