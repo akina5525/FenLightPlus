@@ -1,3 +1,6 @@
+[B]Version 2.2.34[/B] - 2025-06-01
+- Merge branch 'main' of https://github.com/akina5525/FenLightPlus
+
 [B]Version 2.2.33[/B] - 2025-06-01
 - ignore file
 
