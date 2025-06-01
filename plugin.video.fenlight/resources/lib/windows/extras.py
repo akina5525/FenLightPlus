@@ -190,7 +190,7 @@ class Extras(BaseDialog):
 			else: return
 
 	def make_ratings(self, win_prop=4000):
-		data = self.get_omdb_ratings()
+		data = self.meta_get('extra_ratings', None)
 		if not data: return
 		active_extra_ratings = False
 		if self.rating: data['tmdb']['rating'] = self.rating
@@ -850,6 +850,7 @@ class Extras(BaseDialog):
 		self.mpaa, self.genre, self.network = self.meta_get('mpaa'), self.meta_get('genre'), self.meta_get('studio') or ''
 		self.status, self.duration_data = self.extra_info_get('status', '').replace(' Series', ''), int(float(self.meta_get('duration'))/60)
 		self.status_infoline_value = self.make_status_infoline()
+		self.meta['extra_ratings'] = self.get_omdb_ratings()
 		self.make_plot_and_tagline()
 
 	def set_properties(self):
