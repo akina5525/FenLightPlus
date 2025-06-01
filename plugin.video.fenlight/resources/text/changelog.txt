@@ -1,3 +1,8 @@
+[B]Version 2.2.45[/B] - 2025-06-01
+- Merge pull request #27 from akina5525/update-smarttube-package-name
+
+Update SmartTube package name
+
 [B]Version 2.2.44[/B] - 2025-06-01
 - Merge pull request #26 from akina5525/feat/add-director-awards-extras
 
