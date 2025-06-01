@@ -24,6 +24,7 @@ class OMDbAPI:
 		self.result = self.get_result(imdb_id)
 		if not self.result: return {}
 		self.result_get = self.result.get
+		awards = self.process_rating('awards')
 		metascore_rating, tomatometer_rating, tomatousermeter_rating = self.process_rating('metascore'), self.process_rating('tomatoMeter'), self.process_rating('tomatoUserMeter')
 		imdb_rating, tomato_image = self.process_rating('imdbRating'), self.process_rating('tomatoImage')
 		if tomato_image: tomatometer_icon = 'rtcertified.png' if tomato_image == 'certified' else 'rtfresh.png' if tomato_image == 'fresh' else 'rtrotten.png'
@@ -37,6 +38,7 @@ class OMDbAPI:
 				'tomatousermeter': {'rating': '%s%%' % tomatousermeter_rating, 'icon': tomatousermeter_icon},
 				'imdb': {'rating': imdb_rating, 'icon': imdb_icon},
 				'tmdb': {'rating': '', 'icon': tmdb_icon},
+				'awards': awards
 				}
 		media_type = meta.get('mediatype')
 		expiry_function = movie_expiry if media_type == 'movie' else tvshow_expiry

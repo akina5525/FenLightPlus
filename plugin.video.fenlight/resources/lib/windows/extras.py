@@ -63,7 +63,7 @@ class Extras(BaseDialog):
 		self.set_properties()
 		self.tasks = (self.set_artwork, self.set_infoline1, self.set_infoline2, self.make_ratings, self.make_cast, self.make_recommended,
 					self.make_more_like_this, self.make_reviews, self.make_comments, self.make_in_lists, self.make_trivia, self.make_blunders, self.make_parentsguide,
-					self.make_videos, self.make_year, self.make_genres, self.make_network, self.make_collection)
+					self.make_videos, self.make_year, self.make_genres, self.make_network, self.make_collection, self.make_awards)
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
@@ -484,6 +484,31 @@ class Extras(BaseDialog):
 			self.item_action_dict[networks_id] = 'tmdb_id'
 			self.add_items(networks_id, item_list)
 		except: pass
+
+	def make_awards(self):
+		awards_id = 2064
+		if not awards_id in self.enabled_lists: return
+		try:
+			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
+			if not awards_string or awards_string == "N/A":
+				self.setProperty('awards.number', 'x0')
+				return
+			awards_list = [i.strip() for i in awards_string.split('. ') if i.strip()]
+			if not awards_list:
+				self.setProperty('awards.number', 'x0')
+				return
+			def builder():
+				for item in awards_list:
+					try:
+						listitem = self.make_listitem()
+						listitem.setProperty('name', item)
+						yield listitem
+					except: pass
+			item_list = list(builder())
+			self.setProperty('awards.number', count_insert % len(item_list))
+			self.add_items(awards_id, item_list)
+		except:
+			self.setProperty('awards.number', 'x0')
 
 	def make_collection(self):
 		if self.media_type != 'movie': return
