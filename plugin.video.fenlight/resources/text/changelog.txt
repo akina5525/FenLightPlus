@@ -1,3 +1,8 @@
+[B]Version 2.2.38[/B] - 2025-06-01
+- Add awards string handling to Extras class
+
+Updated the `Extras` class in `extras.py` to prepend awards information to the plot string if the awards string is available and valid. Removed several logging statements that provided context for these changes.
+
 [B]Version 2.2.37[/B] - 2025-06-01
 - rollback to v31
 
