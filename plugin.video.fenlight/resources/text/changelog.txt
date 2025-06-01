@@ -1,3 +1,8 @@
+[B]Version 2.2.25[/B] - 2025-06-01
+- Merge pull request #12 from akina5525/feat/add-awards-section
+
+Debug: Add extensive logging for Awards section
+
 [B]Version 2.2.24[/B] - 2025-06-01
 - Merge pull request #11 from akina5525/feat/add-awards-section
 
