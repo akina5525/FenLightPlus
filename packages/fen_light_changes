@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.47[/B][/COLOR]
+- Merge pull request #28 from akina5525/remove-smarttube-option
+
+Remove SmartTube playback option from Extras menu
+
 [COLOR dodgerblue][B]Version 2.2.46[/B][/COLOR]
 - Revert "feat: Add Director and Awards to extras window"
 
