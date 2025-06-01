@@ -204,7 +204,15 @@ class Extras(BaseDialog):
 
 	def make_plot_and_tagline(self):
 		self.plot = self.meta_get('tvshow_plot', '') or self.meta_get('plot', '') or ''
-		if not self.plot: return
+		logger("extras.py", f"make_plot_and_tagline - Initial plot: {self.plot}")
+		awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
+		logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}")
+		if awards_string and awards_string != 'N/A':
+			self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}"
+			logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}")
+		else:
+			logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A")
+		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
 		self.tagline = self.meta_get('tagline') or ''
 		if self.tagline: self.plot = '[I]%s[/I][CR][CR]%s' % (self.tagline, self.plot)
 		if plot_id in self.enabled_lists: self.setProperty('plot_enabled', 'true')
