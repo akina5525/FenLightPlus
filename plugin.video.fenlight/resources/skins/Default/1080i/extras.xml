@@ -158,7 +158,7 @@
                         <align>center</align> <!-- Center the grouplist itself -->
                         <itemgap>10</itemgap> <!-- Gap between genre and awards -->
                         <control type="label">
-                            <width min="50" max="500">auto</width> <!-- Adjusted width, min/max values might need tuning -->
+                            <width min="50" max="450">auto</width> <!-- Adjusted width, min/max values might need tuning -->
                             <height>25</height>
                             <font>font14</font> <!-- FENLIGHT_33 -->
                             <textcolor>FFCCCCCC</textcolor>
@@ -166,7 +166,7 @@
                             <label>[I]$INFO[Window.Property(genre)][/I]</label>
                         </control>
                         <control type="label">
-                            <width min="50" max="600">auto</width> <!-- Adjusted width, min/max values might need tuning -->
+                            <width min="50" max="690">auto</width> <!-- Adjusted width, min/max values might need tuning -->
                             <height>25</height>
                             <font>font14</font> <!-- FENLIGHT_33 -->
                             <textcolor>FFCCCCCC</textcolor>
