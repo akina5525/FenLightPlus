@@ -1,3 +1,8 @@
+[B]Version 2.2.28[/B] - 2025-06-01
+- Merge pull request #15 from akina5525/feat/add-awards-section
+
+Fix: Correct key casing for 'awards' in omdb_api.py
+
 [B]Version 2.2.27[/B] - 2025-06-01
 - Merge pull request #14 from akina5525/feat/add-awards-section
 
