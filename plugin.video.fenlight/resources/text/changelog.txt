@@ -1,3 +1,8 @@
+[B]Version 2.2.23[/B] - 2025-06-01
+- Add Awards section to Extras window: Merge pull request #10 from akina5525/feat/add-awards-section
+
+Add Awards section to Extras window
+
 [B]Version 2.2.22[/B] - 2025-06-01
 - Merge pull request #9 from akina5525/smarttube-integration
 
