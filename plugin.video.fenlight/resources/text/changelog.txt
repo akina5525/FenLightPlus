@@ -1,3 +1,8 @@
+[B]Version 2.2.22[/B] - 2025-06-01
+- Merge pull request #9 from akina5525/smarttube-integration
+
+feat: Integrate SmartTube for trailer playback on Android
+
 [B]Version 2.2.21[/B] - 2025-06-01
 - Merge pull request #8 from akina5525/fix-kodi-compatibility
 
