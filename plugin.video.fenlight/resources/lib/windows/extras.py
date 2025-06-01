@@ -874,7 +874,7 @@ class Extras(BaseDialog):
 		if self.media_type == 'movie' and director_list: # Only show for movies
 			director_name = director_list[0]
 			if director_name: # Ensure director_name is not empty
-				director_info = 'Director: %s' % director_name
+				director_info = '[B]%s[/B]' % director_name
 
 		info_parts = [
 			self.year,
