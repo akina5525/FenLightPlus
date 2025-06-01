@@ -861,7 +861,7 @@ class Extras(BaseDialog):
 		self.setProperty('display_extra_ratings', 'true' if self.display_extra_ratings else 'false')
 		awards_string = self.meta_get('extra_ratings', {}).get('Awards', 'N/A')
 		if awards_string and awards_string != 'N/A':
-			self.setProperty('awards', '[B]Awards:[/B] %s' % awards_string)
+			self.setProperty('awards', awards_string)
 		else:
 			self.setProperty('awards', '')
 
