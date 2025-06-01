@@ -44,6 +44,14 @@ jobs:
           cat "$CHANGELOG" >> tmp_changelog
           mv tmp_changelog "$CHANGELOG"
 
+          # Prepend to packages/fen_light_changes
+          FEN_LIGHT_CHANGES="packages/fen_light_changes"
+          echo "[COLOR dodgerblue][B]Version $NEW_VERSION[/B][/COLOR]" > tmp_fen_light_changes
+          echo "- $COMMIT_MSG" >> tmp_fen_light_changes
+          echo >> tmp_fen_light_changes # Add an empty line for separation
+          cat "$FEN_LIGHT_CHANGES" >> tmp_fen_light_changes
+          mv tmp_fen_light_changes "$FEN_LIGHT_CHANGES"
+
       - name: Create packages directory if not exists
         run: mkdir -p packages
 
@@ -58,6 +66,7 @@ jobs:
           git add packages/fen_light_version \
                   plugin.video.fenlight/addon.xml \
                   plugin.video.fenlight/resources/text/changelog.txt \
+                  packages/fen_light_changes \
                   "packages/plugin.video.fenlight-${NEW_VERSION}.zip"
           git commit -m "Release version ${NEW_VERSION}: $COMMIT_MSG [skip ci]" || echo "No changes to commit"
           git push
