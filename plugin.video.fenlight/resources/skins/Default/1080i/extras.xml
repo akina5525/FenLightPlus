@@ -471,7 +471,7 @@
                             <width>1180</width>
                             <height>390</height>
                             <onup>14</onup>
-                            <ondown>2064</ondown>
+                            <ondown>2050</ondown>
                             <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
                             <texturenofocus colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texturenofocus>
                         </control>
@@ -531,7 +531,7 @@
                             <top>60</top>
                             <width>1180</width>
                             <height>360</height>
-                            <onup>4064</onup>
+                            <onup>50</onup>
                             <ondown>4050</ondown>
                             <orientation>horizontal</orientation>
                             <scrolltime tween="sine">500</scrolltime>
@@ -1818,77 +1818,6 @@
                             <height>25</height>
                             <texture colordiffuse="FFCCCCCC" background="true" flipx="true">fenlight_common/arrow_left.png</texture>
                             <visible>[Control.HasFocus(2062) | Control.HasFocus(4062)] + Container(2062).HasNext</visible>
-                        </control>
-                    </control>
-                </control>
-                <!-- Awards 2064 -->
-                <control type="group">
-                    <visible>Integer.IsGreater(Container(2064).NumItems,0)</visible>
-                    <height>400</height> <!-- Adjusted height for a text list -->
-                    <control type="group">
-                        <control type="label">
-                            <width max="1160">auto</width>
-                            <height>20</height>
-                            <font>font14</font> <!-- FENLIGHT_33 -->
-                            <textcolor>FFCCCCCC</textcolor>
-                            <align>left</align>
-                            <aligny>bottom</aligny>
-                            <label>[B]Awards $INFO[Window.Property(awards.number)][/B]</label>
-                        </control>
-                        <control type="panel" id="2064"> <!-- Changed to panel -->
-                            <pagecontrol>4064</pagecontrol>
-                            <top>40</top> <!-- Space below title -->
-                            <width>1180</width>
-                            <height>300</height> <!-- Height of the panel area -->
-                            <onup>50</onup> <!-- Plot button -->
-                            <ondown>4064</ondown> <!-- Scrollbar -->
-                            <orientation>vertical</orientation> <!-- Vertical list of awards -->
-                            <scrolltime tween="sine">500</scrolltime>
-                            <itemlayout height="50" width="1180"> <!-- Height for each award item -->
-                                <control type="textbox">
-                                    <left>15</left>
-                                    <top>5</top>
-                                    <width>1150</width>
-                                    <height>40</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
-                                    <align>left</align>
-                                    <aligny>center</aligny>
-                                    <textcolor>FFCCCCCC</textcolor>
-                                    <label>$INFO[ListItem.Property(name)]</label>
-                                </control>
-                            </itemlayout>
-                            <focusedlayout height="50" width="1180">
-                                <control type="image"> <!-- Background for focused item -->
-                                    <width>1180</width>
-                                    <height>50</height>
-                                    <texture colordiffuse="FFCCCCCC" border="5">fenlight_common/circle.png</texture>
-                                </control>
-                                <control type="textbox">
-                                    <left>15</left>
-                                    <top>5</top>
-                                    <width>1150</width>
-                                    <height>40</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
-                                    <align>left</align>
-                                    <aligny>center</aligny>
-                                    <textcolor>FF1F2020</textcolor> <!-- Focused text color -->
-                                    <label>$INFO[ListItem.Property(name)]</label>
-                                </control>
-                            </focusedlayout>
-                        </control>
-                        <control type="scrollbar" id="4064">
-                            <left>1185</left> <!-- Position to the right of the panel -->
-                            <top>40</top> <!-- Align with panel top -->
-                            <width>15</width>
-                            <height>300</height> <!-- Match panel height -->
-                            <onup>2064</onup>
-                            <ondown>2050</ondown> <!-- Cast List -->
-                            <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
-                            <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
-                            <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
-                            <showonepage>false</showonepage>
-                            <orientation>vertical</orientation> <!-- Vertical scrollbar -->
-                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2064) | Control.HasFocus(4064)]</visible>
                         </control>
                     </control>
                 </control>

@@ -40,7 +40,7 @@ setting_base, label_base, ratings_icon_base = 'fenlight.extras.%s.button', 'butt
 separator = '[B]  •  [/B]'
 button_ids = (10, 11, 12, 13, 14, 15, 16, 17, 50)
 plot_id, cast_id, recommended_id, more_like_this_id, reviews_id, comments_id, trivia_id = 2000, 2050, 2051, 2052, 2053, 2054, 2055
-blunders_id, parentsguide_id, in_lists_id, videos_id, year_id, genres_id, networks_id, collection_id, awards_id = 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064 # Added awards_id
+blunders_id, parentsguide_id, in_lists_id, videos_id, year_id, genres_id, networks_id, collection_id = 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063
 items_list_ids = (recommended_id, more_like_this_id, year_id, genres_id, networks_id, collection_id)
 text_list_ids = (reviews_id, trivia_id, blunders_id, parentsguide_id, comments_id)
 open_folder_list_ids = (in_lists_id,)
@@ -61,9 +61,9 @@ class Extras(BaseDialog):
 		self.control_id = None
 		self.set_starting_constants(kwargs)
 		self.set_properties()
-		self.tasks = (self.set_artwork, self.set_infoline1, self.set_infoline2, self.make_awards, self.make_blunders, self.make_cast, self.make_collection,
-					self.make_comments, self.make_genres, self.make_in_lists, self.make_more_like_this, self.make_network, self.make_parentsguide,
-					self.make_ratings, self.make_recommended, self.make_reviews, self.make_trivia, self.make_videos, self.make_year)
+		self.tasks = (self.set_artwork, self.set_infoline1, self.set_infoline2, self.make_ratings, self.make_cast, self.make_recommended,
+					self.make_more_like_this, self.make_reviews, self.make_comments, self.make_in_lists, self.make_trivia, self.make_blunders, self.make_parentsguide,
+					self.make_videos, self.make_year, self.make_genres, self.make_network, self.make_collection) # Removed self.make_awards
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
@@ -202,30 +202,6 @@ class Extras(BaseDialog):
 			active_extra_ratings = True
 		if win_prop == 4000 and self.getProperty('tmdb_rating') == 'true': self.set_infoline1(remove_rating=True)
 
-	def make_awards(self):
-		if not awards_id in self.enabled_lists: return
-		def builder():
-			for item in awards_list:
-				try:
-					listitem = self.make_listitem()
-					listitem.setProperty('name', item)
-					yield listitem
-				except: pass
-		try:
-			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-			if not awards_string or awards_string == 'N/A':
-				self.setProperty('awards.number', count_insert % 0)
-				self.add_items(awards_id, [])
-				return
-			awards_list = [award.strip() for award in awards_string.split(' | ')]
-			item_list = list(builder())
-			self.setProperty('awards.number', count_insert % len(item_list))
-			# self.item_action_dict[awards_id] = 'name' # Not needed if items are not actionable
-			self.add_items(awards_id, item_list)
-		except:
-			self.setProperty('awards.number', count_insert % 0) # Ensure property is set on error
-			self.add_items(awards_id, []) # Ensure list is cleared or empty on error
-
 	def make_plot_and_tagline(self):
 		self.plot = self.meta_get('tvshow_plot', '') or self.meta_get('plot', '') or ''
 		# logger("extras.py", f"make_plot_and_tagline - Initial plot: {self.plot}") # Removed
@@ -234,9 +210,6 @@ class Extras(BaseDialog):
 
 		awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
 		# logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
-		if awards_string and awards_string != 'N/A' and awards_string.strip():
-			formatted_awards = '[CR][CR][B]Awards:[/B][CR]' + awards_string.strip()
-			self.plot += formatted_awards
 		# else: # Removed logger for this path too
 			# logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
 		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
