@@ -491,15 +491,15 @@ class Extras(BaseDialog):
 	def make_awards(self):
 		awards_id = 2064
 		if not awards_id in self.enabled_lists: return
-		logger('extras.py: make_awards started')
+		logger("extras.py", 'make_awards started')
 		try:
 			item_list = []
 			processed_awards_list = []
 			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-			logger(f'extras.py: make_awards - raw awards_string: {awards_string}')
+			logger("extras.py", f'make_awards - raw awards_string: {awards_string}')
 			if awards_string and awards_string != "N/A":
 				processed_awards_list = [i.strip() for i in awards_string.split('. ') if i.strip()]
-				logger(f'extras.py: make_awards - processed_awards_list: {processed_awards_list}')
+				logger("extras.py", f'make_awards - processed_awards_list: {processed_awards_list}')
 				if processed_awards_list:
 					def builder():
 						for item in processed_awards_list:
@@ -511,24 +511,24 @@ class Extras(BaseDialog):
 					item_list = list(builder())
 
 			if not item_list:
-				logger('extras.py: make_awards - No awards found path taken')
+				logger("extras.py", 'make_awards - No awards found path taken')
 				listitem = self.make_listitem()
 				listitem.setProperty('name', "No awards found")
 				item_list.append(listitem)
-				logger(f'extras.py: make_awards - About to set awards.number, item_list length: {len(item_list)}')
+				logger("extras.py", f'make_awards - About to set awards.number, item_list length: {len(item_list)}')
 				self.setProperty('awards.number', 'x1') # Display x1 for "No awards found"
-				logger(f'extras.py: make_awards - awards.number set to: {self.getProperty("awards.number")}')
+				logger("extras.py", f'make_awards - awards.number set to: {self.getProperty("awards.number")}')
 			else:
-				logger('extras.py: make_awards - Actual awards path taken')
-				logger(f'extras.py: make_awards - About to set awards.number, item_list length: {len(item_list)}')
+				logger("extras.py", 'make_awards - Actual awards path taken')
+				logger("extras.py", f'make_awards - About to set awards.number, item_list length: {len(item_list)}')
 				self.setProperty('awards.number', count_insert % len(item_list))
-				logger(f'extras.py: make_awards - awards.number set to: {self.getProperty("awards.number")}')
+				logger("extras.py", f'make_awards - awards.number set to: {self.getProperty("awards.number")}')
 
-			logger(f'extras.py: make_awards - About to add {len(item_list)} items to control {awards_id}')
+			logger("extras.py", f'make_awards - About to add {len(item_list)} items to control {awards_id}')
 			self.add_items(awards_id, item_list)
-			logger('extras.py: make_awards - Items added')
+			logger("extras.py", 'make_awards - Items added')
 		except Exception as e:
-			logger(f'extras.py: make_awards - EXCEPTION: {e}', 'error')
+			logger("extras.py", f'make_awards - EXCEPTION: {e}')
 			try:
 				item_list = []
 				listitem = self.make_listitem()
