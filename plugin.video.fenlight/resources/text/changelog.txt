@@ -1,3 +1,8 @@
+[B]Version 2.2.24[/B] - 2025-06-01
+- Merge pull request #11 from akina5525/feat/add-awards-section
+
+Fix: Display "No awards found" in Extras window
+
 [B]Version 2.2.23[/B] - 2025-06-01
 - Add Awards section to Extras window: Merge pull request #10 from akina5525/feat/add-awards-section
 
