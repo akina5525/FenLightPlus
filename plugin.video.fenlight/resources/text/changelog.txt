@@ -1,3 +1,8 @@
+[B]Version 2.2.39[/B] - 2025-06-01
+- Merge pull request #22 from akina5525/fix/director-formatting
+
+Fix: Remove "Director:" prefix and bold director's name in Extras
+
 [B]Version 2.2.38[/B] - 2025-06-01
 - Add awards string handling to Extras class
 
