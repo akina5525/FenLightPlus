@@ -52,7 +52,7 @@ ratings_null = ('', '%')
 missing_image_check = ('', None, empty_poster, addon_fanart)
 _images = Images().run
 youtube_thumb_url, youtube_url = 'https://img.youtube.com/vi/%s/0.jpg', 'plugin://plugin.video.youtube/play/?video_id=%s'
-smarttube_package_name = "com.liskovsoft.smarttubetv.beta"
+smarttube_package_name = "com.teamsmart.videomanager.tv"
 smarttube_intent_uri = "intent:#Intent;action=android.intent.action.VIEW;package=%s;S.browser_fallback_url=http://youtube.com/watch?v=%s;S.id=%s;S.video_id=%s;end"
 
 class Extras(BaseDialog):
