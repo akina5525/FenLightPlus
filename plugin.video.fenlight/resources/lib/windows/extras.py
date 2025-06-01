@@ -208,13 +208,13 @@ class Extras(BaseDialog):
 		self.tagline = self.meta_get('tagline') or ''
 		if self.tagline: self.plot = '[I]%s[/I][CR][CR]%s' % (self.tagline, self.plot)
 
-		awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-		# logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
-		if awards_string and awards_string != 'N/A':
-			self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}"
-			# logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}") # Removed
-		# else: # Removed logger for this path too
-			# logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
+		# awards_string = self.meta_get('extra_ratings', {}).get('Awards', '') # Removed
+		# # logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
+		# if awards_string and awards_string != 'N/A': # Removed
+			# self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}" # Removed
+			# # logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}") # Removed
+		# # else: # Removed logger for this path too
+			# # logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
 		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
 		if plot_id in self.enabled_lists: self.setProperty('plot_enabled', 'true')
 
@@ -859,6 +859,11 @@ class Extras(BaseDialog):
 		self.setProperty('media_type', self.media_type), self.setProperty('title', self.title), self.setProperty('year', self.year), self.setProperty('plot', self.plot)
 		self.setProperty('genre', ', '.join(self.genre)), self.setProperty('network', ', '.join(self.network)), self.setProperty('enable_scrollbars', self.enable_scrollbars)
 		self.setProperty('display_extra_ratings', 'true' if self.display_extra_ratings else 'false')
+		awards_string = self.meta_get('extra_ratings', {}).get('Awards', 'N/A')
+		if awards_string and awards_string != 'N/A':
+			self.setProperty('awards', '[B]Awards:[/B] %s' % awards_string)
+		else:
+			self.setProperty('awards', '')
 
 	def make_status_infoline(self):
 		status_str = self.status
