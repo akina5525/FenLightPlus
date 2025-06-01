@@ -52,8 +52,8 @@ ratings_null = ('', '%')
 missing_image_check = ('', None, empty_poster, addon_fanart)
 _images = Images().run
 youtube_thumb_url, youtube_url = 'https://img.youtube.com/vi/%s/0.jpg', 'plugin://plugin.video.youtube/play/?video_id=%s'
-smarttube_package_name = "com.teamsmart.videomanager.tv"
-smarttube_intent_uri = "intent:#Intent;action=android.intent.action.VIEW;package=%s;S.browser_fallback_url=http://youtube.com/watch?v=%s;S.id=%s;S.video_id=%s;end"
+# smarttube_package_name = "com.teamsmart.videomanager.tv" # Removed
+# smarttube_intent_uri = "intent:#Intent;action=android.intent.action.VIEW;package=%s;S.browser_fallback_url=http://youtube.com/watch?v=%s;S.id=%s;S.video_id=%s;end" # Removed
 
 class Extras(BaseDialog):
 	def __init__(self, *args, **kwargs):
@@ -67,9 +67,7 @@ class Extras(BaseDialog):
 
 	def onInit(self):
 		self.set_home_property('window_loaded', 'true')
-		# logger("extras.py", f'onInit - self.tasks: {[task.__name__ for task in self.tasks]}') # Removed
 		for i in self.tasks:
-			# logger("extras.py", f'onInit - Starting task: {i.__name__}') # Removed
 			Thread(target=i).start()
 		self.set_default_focus()
 		if self.starting_position:
@@ -103,7 +101,7 @@ class Extras(BaseDialog):
 			if focus_id == cast_id:
 				person_name = self.get_listitem(focus_id).getProperty(self.item_action_dict[focus_id])
 				return person_search(person_name)
-			elif focus_id == in_lists_id: # This context action is for Trakt lists. May need a similar one for TMDB lists if context menu actions are desired.
+			elif focus_id == in_lists_id:
 				show_busy_dialog()
 				try:
 					list_item, position = self.get_listitem(focus_id), self.get_position(focus_id)
@@ -131,22 +129,17 @@ class Extras(BaseDialog):
 				return window_manager(self)
 			elif self.control_id == videos_id:
 				chosen_listitem = self.get_listitem(self.control_id)
-				if chosen_listitem.getProperty('is_smarttube_link') == 'true':
-					smarttube_uri = chosen_listitem.getProperty('smarttube_uri')
-					execute_builtin(f'StartAndroidActivity("{smarttube_uri}")')
-					return
-				elif chosen_listitem.getProperty('is_direct_link') == 'true':
+				if chosen_listitem.getProperty('is_direct_link') == 'true': # SmartTube check removed
 					direct_url = chosen_listitem.getProperty('direct_url')
 					if direct_url:
 						try:
-							import xbmc # Try direct import first
+							import xbmc
 						except ImportError:
-							from modules import kodi_utils # Fallback to kodi_utils
+							from modules import kodi_utils
 							xbmc = kodi_utils.xbmc
 						xbmc.Player().play(direct_url)
 						return
-				else:
-					# Fallback to YouTube playback logic
+				else: # Assumes if not a direct link, it's a YouTube link (or other)
 					if not self.youtube_installed_check():
 						return self.notification('Youtube Plugin needed for playback')
 					youtube_key = chosen_listitem.getProperty('key_id')
@@ -155,37 +148,21 @@ class Extras(BaseDialog):
 						self.window_player_url = youtube_url % youtube_key
 						return window_player(self)
 					else:
-						# This case should ideally not happen if builder filters correctly
 						return self.notification('No video link found for this item.')
 			elif self.control_id in text_list_ids:
 				if self.control_id == parentsguide_id: return self.show_text_media(text=chosen_var)
 				else: return self.select_item(self.control_id, self.show_text_media(text=self.get_attribute(self, chosen_var), current_index=position))
-			elif self.control_id in open_folder_list_ids: # This is for Trakt lists. A similar block might be needed for TMDB lists if self.folder_runner leads to a list that needs specific item actions.
+			elif self.control_id in open_folder_list_ids:
 				try: chosen_var = self.get_listitem(self.control_id).getProperty(self.item_action_dict[self.control_id])
 				except: return
 				if not chosen_var: return
 				try:
 					self.close_all()
-					chosen = self.get_attribute(self, chosen_var)[position] # This line assumes chosen_var is a key to an attribute on self.
-					# For TMDB, 'chosen' would likely be one of the dicts from item_found_in_lists.
-					# The mode for TMDB list contents would be different, e.g. 'tmdb.list.build_tmdb_list_contents'
-					# and it would take 'list_id' from chosen['id']
-					# This part needs to be adapted if we are truly making it similar to Trakt's open_folder_list_ids
-					# For now, the new method show_in_tmdb_lists will use a mode 'tmdb.list.build_tmdb_list_display'
-					# which is expected to display the lists, and then selecting a list would trigger another action,
-					# possibly 'tmdb.list.build_tmdb_list_contents' with the 'list_id'.
-					
-					# Original Trakt specific code:
-					# list_name, user, slug = chosen['name'], chosen['user']['ids']['slug'], chosen['ids']['slug']
-					# self.selected = self.folder_runner({'mode': 'trakt.list.build_trakt_list', 'user': user, 'slug': slug, 'list_type': 'user_lists', 'list_name': list_name})
-					# self.close()
-					
-					# Placeholder if TMDB list selection needs similar handling here:
-					if chosen_var == 'all_tmdb_lists_placeholder': # This is a placeholder, actual property will be different
-						list_details = self.get_attribute(self, chosen_var)[position] # Example
+					chosen = self.get_attribute(self, chosen_var)[position]
+					if chosen_var == 'all_tmdb_lists_placeholder':
+						list_details = self.get_attribute(self, chosen_var)[position]
 						self.selected = self.folder_runner({'mode': 'tmdb.list.build_tmdb_list_contents', 'list_id': list_details['id'], 'list_name': list_details['name']})
 						self.close()
-
 				except: return
 			else: return
 
@@ -204,18 +181,9 @@ class Extras(BaseDialog):
 
 	def make_plot_and_tagline(self):
 		self.plot = self.meta_get('tvshow_plot', '') or self.meta_get('plot', '') or ''
-		# logger("extras.py", f"make_plot_and_tagline - Initial plot: {self.plot}") # Removed
 		self.tagline = self.meta_get('tagline') or ''
 		if self.tagline: self.plot = '[I]%s[/I][CR][CR]%s' % (self.tagline, self.plot)
-
-		# awards_string = self.meta_get('extra_ratings', {}).get('Awards', '') # Removed
-		# # logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
-		# if awards_string and awards_string != 'N/A': # Removed
-			# self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}" # Removed
-			# # logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}") # Removed
-		# # else: # Removed logger for this path too
-			# # logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
-		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
+		if not self.plot: return
 		if plot_id in self.enabled_lists: self.setProperty('plot_enabled', 'true')
 
 	def make_cast(self):
@@ -310,8 +278,8 @@ class Extras(BaseDialog):
 			self.add_items(comments_id, item_list)
 		except: pass
 
-	def make_in_lists(self): # This is the Trakt make_in_lists. A new one might be needed for TMDB if the display is complex.
-		if not in_lists_id in self.enabled_lists: return # in_lists_id is currently tied to Trakt.
+	def make_in_lists(self):
+		if not in_lists_id in self.enabled_lists: return
 		def builder():
 			for count, item in enumerate(self.all_in_lists, 1):
 				try:
@@ -332,11 +300,11 @@ class Extras(BaseDialog):
 			try: liked_lists = [(i['list']['ids']['slug'], i['list']['user']['ids']['slug']) for i in trakt_api.trakt_get_lists('liked_lists')]
 			except: liked_lists = []
 			template, replacements = '%02d.[CR][B]%s[/B]%s[CR][CR]by %s[CR](x%02d)', (('-', ' '), ('_', ' '), ('.', ' '))
-			self.all_in_lists = trakt_api.trakt_lists_with_media(self.media_type, self.imdb_id) # Trakt API call
+			self.all_in_lists = trakt_api.trakt_lists_with_media(self.media_type, self.imdb_id)
 			item_list = list(builder())
-			self.setProperty('trakt_in_lists.number', count_insert % len(item_list)) # Property for Trakt
-			self.item_action_dict[in_lists_id] = 'content_list' # Action for Trakt
-			self.add_items(in_lists_id, item_list) # Control ID for Trakt
+			self.setProperty('trakt_in_lists.number', count_insert % len(item_list))
+			self.item_action_dict[in_lists_id] = 'content_list'
+			self.add_items(in_lists_id, item_list)
 		except: pass
 
 	def make_trivia(self):
@@ -402,9 +370,7 @@ class Extras(BaseDialog):
 
 	def make_videos(self):
 		if not videos_id in self.enabled_lists: return
-		# Removed youtube_installed_check() from here
-		smarttube_enabled = get_setting('smarttube.enabled') == 'true'
-		# is_android = get_property('System.Platform.Android') == 'true' # Original line, will be overridden by is_android_platform
+		# smarttube_enabled = get_setting('smarttube.enabled') == 'true' # Removed
 		def _sort_trailers(trailers):
 			official_trailers = [i for i in trailers if i.get('official') and i.get('type') == 'Trailer' and 'official trailer' in i.get('name', '').lower()]
 			other_official_trailers = [i for i in trailers if i.get('official') and i.get('type') == 'Trailer' and not i in official_trailers]
@@ -429,25 +395,16 @@ class Extras(BaseDialog):
 						listitem.setProperty('direct_url', direct_url)
 						listitem.setProperty('thumbnail', thumbnail or get_icon('play'))
 					elif youtube_key:
-						# Original conditional logic restored
-						if smarttube_enabled and get_property('System.Platform.Android') == 'true':
-							smarttube_uri = smarttube_intent_uri % (smarttube_package_name, youtube_key, youtube_key, youtube_key)
-							listitem.setProperty('is_smarttube_link', 'true')
-							listitem.setProperty('smarttube_uri', smarttube_uri)
-							listitem.setProperty('key_id', youtube_key) # Fallback for display or if SmartTube fails
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
-						else:
-							listitem.setProperty('is_direct_link', 'false')
-							listitem.setProperty('key_id', youtube_key)
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
+						listitem.setProperty('is_direct_link', 'false')
+						listitem.setProperty('key_id', youtube_key)
+						listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
 					else:
-						# Skip item if it has neither a direct_url nor a youtube_key
 						continue
 					yield listitem
 				except: pass
 		try:
 			all_trailers_data = self.meta_get('all_trailers', [])
-			if not all_trailers_data: # If all_trailers is empty or None, don't proceed
+			if not all_trailers_data:
 				self.setProperty('youtube_videos.number', count_insert % 0)
 				self.add_items(videos_id, [])
 				return
@@ -455,8 +412,7 @@ class Extras(BaseDialog):
 			all_trailers = _sort_trailers(all_trailers_data)
 			item_list = list(builder())
 			self.setProperty('youtube_videos.number', count_insert % len(item_list))
-			# Default action key, onClick will check properties to decide actual action
-			self.item_action_dict[videos_id] = 'name' # Using 'name' as a placeholder, actual value used depends on properties
+			self.item_action_dict[videos_id] = 'name'
 			self.add_items(videos_id, item_list)
 		except: pass
 
@@ -738,8 +694,6 @@ class Extras(BaseDialog):
 		self.close_all()
 		tmdb_media_type = 'movie' if self.media_type == 'movie' else 'tv'
 		try:
-			# Assuming tmdb_api.get_lists might not require an API key if the tmdb_api module handles it internally.
-			# If tmdb_api.get_lists() returns None or raises an exception on failure, this try-except will catch it.
 			all_tmdb_lists_response = tmdb_api.get_lists() 
 			if not all_tmdb_lists_response or 'results' not in all_tmdb_lists_response:
 				ok_dialog(text='Could not fetch TMDB Lists.')
@@ -752,22 +706,19 @@ class Extras(BaseDialog):
 				list_id = list_obj.get('id')
 				list_name = list_obj.get('name', 'Unknown List')
 				if not list_id: continue
-				# Assuming tmdb_api.check_item_exists might not require an API key directly.
-				# And that it takes list_id, item_tmdb_id, and item_media_type.
 				is_present = tmdb_api.check_item_exists(list_id, self.tmdb_id, tmdb_media_type)
 				if is_present:
 					item_found_in_lists.append({'id': list_id, 'name': list_name, 'poster_path': list_obj.get('poster_path', '')})
 			
 			if item_found_in_lists:
 				self.selected = self.folder_runner({
-					'mode': 'tmdb.list.build_tmdb_list_display', # This mode will need to be implemented to handle the display of these lists
+					'mode': 'tmdb.list.build_tmdb_list_display',
 					'data': item_found_in_lists,
 					'category_name': '%s In TMDB Lists' % self.title
 				})
 			else:
 				ok_dialog(text='This item is not found in any of your TMDB Lists.')
 		except Exception as e:
-			# logger(f"Error in show_in_tmdb_lists: {e}", 'error') # Uncomment when logger is available
 			ok_dialog(text='Error occurred while fetching TMDB Lists.')
 		self.close()
 
