@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.42[/B][/COLOR]
+- Merge pull request #25 from akina5525/feat/show-awards-next-to-genres
+
+Fix: Address awards display issues in extras window
+
 [COLOR dodgerblue][B]Version 2.2.41[/B][/COLOR]
 - Merge pull request #24 from akina5525/feat/show-awards-next-to-genres
 
