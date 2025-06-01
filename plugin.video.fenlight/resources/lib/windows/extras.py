@@ -210,6 +210,9 @@ class Extras(BaseDialog):
 
 		awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
 		# logger("extras.py", f"make_plot_and_tagline - Fetched awards_string: {awards_string}") # Removed
+		if awards_string and awards_string != 'N/A':
+			self.plot = f"[B]Awards:[/B] {awards_string}[CR][CR]{self.plot}"
+			# logger("extras.py", f"make_plot_and_tagline - Plot after prepending awards: {self.plot}") # Removed
 		# else: # Removed logger for this path too
 			# logger("extras.py", "make_plot_and_tagline - No awards string to prepend or it was N/A") # Removed
 		if not self.plot: return # Check if plot became empty after potential modifications, though unlikely here.
