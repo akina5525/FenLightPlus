@@ -1,3 +1,8 @@
+[B]Version 2.2.29[/B] - 2025-06-01
+- Merge pull request #16 from akina5525/feat/add-awards-section
+
+Feat: Display awards in plot & comment out separate section
+
 [B]Version 2.2.28[/B] - 2025-06-01
 - Merge pull request #15 from akina5525/feat/add-awards-section
 
