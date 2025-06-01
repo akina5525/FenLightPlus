@@ -1,3 +1,6 @@
+[B]Version 2.2.37[/B] - 2025-06-01
+- rollback to v31
+
 [B]Version 2.2.36[/B] - 2025-06-01
 - Merge pull request #21 from akina5525/v31
 
