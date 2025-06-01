@@ -317,7 +317,7 @@
                             <height>70</height>
                             <onleft>13</onleft>
                             <onright>11</onright>
-                            <onup>2064</onup>
+                            <onup>4063</onup>
                             <ondown>14</ondown>
                             <label>$INFO[Window.Property(button10.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -334,7 +334,7 @@
                             <height>70</height>
                             <onleft>10</onleft>
                             <onright>12</onright>
-                            <onup>2064</onup>
+                            <onup>4063</onup>
                             <ondown>15</ondown>
                             <label>$INFO[Window.Property(button11.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -351,7 +351,7 @@
                             <height>70</height>
                             <onleft>11</onleft>
                             <onright>13</onright>
-                            <onup>2064</onup>
+                            <onup>4063</onup>
                             <ondown>16</ondown>
                             <label>$INFO[Window.Property(button12.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -368,7 +368,7 @@
                             <height>70</height>
                             <onleft>12</onleft>
                             <onright>10</onright>
-                            <onup>2064</onup>
+                            <onup>4063</onup>
                             <ondown>17</ondown>
                             <label>$INFO[Window.Property(button13.label)]</label>
                             <font>font13</font> <!-- FENLIGHT_30 -->
@@ -452,7 +452,7 @@
                         </control>
                     </control>
                 </control>
-                <!-- Awards 2064 -->
+                <!-- Awards 2064 START COMMENTED OUT
                 <control type="group">
                     <visible>Integer.IsGreater(Container(2064).NumItems,0)</visible>
                     <height>760</height>
@@ -460,7 +460,7 @@
                         <control type="label">
                             <width max="1160">auto</width>
                             <height>20</height>
-                            <font>font14</font> <!-- FENLIGHT_33 -->
+                            <font>font14</font>
                             <textcolor>FFCCCCCC</textcolor>
                             <align>left</align>
                             <aligny>bottom</aligny>
@@ -471,8 +471,8 @@
                             <top>60</top>
                             <width>1180</width>
                             <height>360</height>
-                            <onup>4063</onup> <!-- Scrollbar of More From Collection -->
-                            <ondown>4064</ondown> <!-- Scrollbar for this list -->
+                            <onup>4063</onup>
+                            <ondown>4064</ondown>
                             <orientation>horizontal</orientation>
                             <scrolltime tween="sine">500</scrolltime>
                             <itemlayout height="380" width="590">
@@ -486,7 +486,7 @@
                                     <left>20</left>
                                     <width>540</width>
                                     <height>308</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
+                                    <font>font12</font>
                                     <align>center</align>
                                     <aligny>top</aligny>
                                     <textcolor>FFCCCCCC</textcolor>
@@ -505,7 +505,7 @@
                                     <left>20</left>
                                     <width>540</width>
                                     <height>308</height>
-                                    <font>font12</font> <!-- FENLIGHT_26 -->
+                                    <font>font12</font>
                                     <align>center</align>
                                     <aligny>top</aligny>
                                     <textcolor>FF1F2020</textcolor>
@@ -519,7 +519,7 @@
                             <width>1170</width>
                             <height>15</height>
                             <onup>2064</onup>
-                            <ondown>10</ondown> <!-- First button of main action buttons -->
+                            <ondown>10</ondown>
                             <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
                             <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
                             <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
@@ -545,6 +545,7 @@
                         </control>
                     </control>
                 </control>
+                Awards 2064 END COMMENTED OUT -->
                 <!-- Plot 2000 -->
                 <control type="group">
                     <visible>String.IsEqual(Window.Property(plot_enabled),true)</visible>
@@ -2021,8 +2022,8 @@
                             <top>432</top>
                             <width>1170</width>
                             <height>15</height>
-                            <onup>2063</onup> <!-- This was the original ondown for 4063 -->
-                            <ondown>2064</ondown> <!-- Changed to navigate to the new Awards section -->
+                            <onup>2063</onup>
+                            <ondown>10</ondown> <!-- Reverted to original target -->
                             <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
                             <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
                             <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
