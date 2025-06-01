@@ -875,21 +875,39 @@ class Extras(BaseDialog):
 
 	def set_infoline1(self, remove_rating=False):
 		director_list = self.meta_get('director', [])
-		director_info = None
+		director_name_formatted = None
 		if self.media_type == 'movie' and director_list: # Only show for movies
 			director_name = director_list[0]
 			if director_name: # Ensure director_name is not empty
-				director_info = '[B]%s[/B]' % director_name
+				director_name_formatted = director_name # Use the raw name for the new string
 
-		info_parts = [
-			self.year,
-			None if remove_rating else self.rating,
+		awards_string = self.meta_get('extra_ratings', {}).get('Awards', 'N/A')
+
+		director_awards_parts = []
+		if director_name_formatted:
+			director_awards_parts.append('[B]Director:[/B] %s' % director_name_formatted)
+		if awards_string and awards_string != 'N/A':
+			director_awards_parts.append('[B]Awards:[/B] %s' % awards_string)
+
+		director_awards_info = None
+		if director_awards_parts:
+			director_awards_info = '[CR]'.join(director_awards_parts)
+
+		info_parts = [self.year]
+
+		if director_awards_info:
+			info_parts.append(director_awards_info)
+
+		if not remove_rating and self.rating:
+			info_parts.append(self.rating)
+
+		info_parts.extend([
 			self.mpaa,
-			director_info, # Add director info here
 			self.spoken_language,
 			self.get_duration(),
 			self.status_infoline_value
-		]
+		])
+
 		self.set_label(2001, separator.join([i for i in info_parts if i]))
 
 	def set_infoline2(self):
