@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.40[/B][/COLOR]
+- Merge pull request #23 from akina5525/update-workflow-fenlight-changes
+
+Update main.yml to append to packages/fen_light_changes
+
 [COLOR dodgerblue][B]Version 2.2.05[/B][/COLOR]
 - Added TMDB Lists integration
 	- Import from Trakt lists (large lists are split into 100 item chunks)

@@ -1,3 +1,8 @@
+[B]Version 2.2.40[/B] - 2025-06-01
+- Merge pull request #23 from akina5525/update-workflow-fenlight-changes
+
+Update main.yml to append to packages/fen_light_changes
+
 [B]Version 2.2.39[/B] - 2025-06-01
 - Merge pull request #22 from akina5525/fix/director-formatting
 
