@@ -489,26 +489,41 @@ class Extras(BaseDialog):
 		awards_id = 2064
 		if not awards_id in self.enabled_lists: return
 		try:
+			item_list = []
 			awards_string = self.meta_get('extra_ratings', {}).get('Awards', '')
-			if not awards_string or awards_string == "N/A":
-				self.setProperty('awards.number', 'x0')
-				return
-			awards_list = [i.strip() for i in awards_string.split('. ') if i.strip()]
-			if not awards_list:
-				self.setProperty('awards.number', 'x0')
-				return
-			def builder():
-				for item in awards_list:
-					try:
-						listitem = self.make_listitem()
-						listitem.setProperty('name', item)
-						yield listitem
-					except: pass
-			item_list = list(builder())
-			self.setProperty('awards.number', count_insert % len(item_list))
+			if awards_string and awards_string != "N/A":
+				awards_list_processed = [i.strip() for i in awards_string.split('. ') if i.strip()]
+				if awards_list_processed:
+					def builder():
+						for item in awards_list_processed:
+							try:
+								listitem = self.make_listitem()
+								listitem.setProperty('name', item)
+								yield listitem
+							except: pass
+					item_list = list(builder())
+
+			if not item_list:
+				listitem = self.make_listitem()
+				listitem.setProperty('name', "No awards found")
+				item_list.append(listitem)
+				self.setProperty('awards.number', 'x1') # Display x1 for "No awards found"
+			else:
+				self.setProperty('awards.number', count_insert % len(item_list))
+
 			self.add_items(awards_id, item_list)
 		except:
-			self.setProperty('awards.number', 'x0')
+			# In case of any exception, try to display "No awards found"
+			# This is a fallback, ideally specific exceptions should be handled if possible
+			try:
+				item_list = []
+				listitem = self.make_listitem()
+				listitem.setProperty('name', "No awards found")
+				item_list.append(listitem)
+				self.setProperty('awards.number', 'x1')
+				self.add_items(awards_id, item_list)
+			except:
+				self.setProperty('awards.number', 'x0') # Final fallback if creating listitem fails
 
 	def make_collection(self):
 		if self.media_type != 'movie': return
