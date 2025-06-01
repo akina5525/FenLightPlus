@@ -1,3 +1,8 @@
+[B]Version 2.2.46[/B] - 2025-06-01
+- Revert "feat: Add Director and Awards to extras window"
+
+This reverts commit 3aa31f7cd78e9678c85327da0c573a554dece3f6.
+
 [B]Version 2.2.45[/B] - 2025-06-01
 - Merge pull request #27 from akina5525/update-smarttube-package-name
 
