@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.52[/B][/COLOR]
+- Merge pull request #34 from akina5525/fix-rottentomatoes-import
+
+Fix: Correct import for RottenTomatoesClient
+
 [COLOR dodgerblue][B]Version 2.2.51[/B][/COLOR]
 - Merge pull request #33 from akina5525/feat/rotten-tomatoes-trailer
 
