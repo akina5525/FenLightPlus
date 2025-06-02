@@ -11,7 +11,7 @@ lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
 
-from modules import kodi_utils, settings, watched_status, yt_dlp_utils
+from modules import kodi_utils, settings, watched_status
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
 from modules.sources import Sources
@@ -41,7 +41,7 @@ tmdb_movies_companies, tmdb_tv_networks = tmdb_api.tmdb_movies_companies, tmdb_a
 imdb_reviews, imdb_trivia, imdb_blunders, imdb_parentsguide = imdb_api.imdb_reviews, imdb_api.imdb_trivia, imdb_api.imdb_blunders, imdb_api.imdb_parentsguide
 fetch_ratings_info, trakt_comments, like_a_list, unlike_a_list = omdb_api.fetch_ratings_info, trakt_api.trakt_comments, trakt_api.trakt_like_a_list, trakt_api.trakt_unlike_a_list
 tmdb_image_base, count_insert = 'https://image.tmdb.org/t/p/%s%s', 'x%s'
-# youtube_check = 'plugin.video.youtube' # Removed
+youtube_check = 'plugin.video.youtube'
 setting_base, label_base, ratings_icon_base = 'fenlight.extras.%s.button', 'button%s.label', 'fenlight_flags/ratings/%s'
 separator = '[B]  •  [/B]'
 button_ids = (10, 11, 12, 13, 14, 15, 16, 17, 50)
@@ -57,8 +57,7 @@ meta_ratings_values = (('metascore', 1), ('imdb', 4), ('tmdb', 5))
 ratings_null = ('', '%')
 missing_image_check = ('', None, empty_poster, addon_fanart)
 _images = Images().run
-youtube_thumb_url = 'https://img.youtube.com/vi/%s/0.jpg' # youtube_url part removed
-# youtube_url = 'plugin://plugin.video.youtube/play/?video_id=%s' # Removed
+youtube_thumb_url, youtube_url = 'https://img.youtube.com/vi/%s/0.jpg', 'plugin://plugin.video.youtube/play/?video_id=%s'
 # smarttube_package_name = "com.teamsmart.videomanager.tv" # Removed
 # smarttube_intent_uri = "intent:#Intent;action=android.intent.action.VIEW;package=%s;S.browser_fallback_url=http://youtube.com/watch?v=%s;S.id=%s;S.video_id=%s;end" # Removed
 
@@ -146,12 +145,16 @@ class Extras(BaseDialog):
 							xbmc = kodi_utils.xbmc
 						xbmc.Player().play(direct_url)
 						return
-				else: # yt-dlp failed or not a direct link initially
+				else: # Assumes if not a direct link, it's a YouTube link (or other)
+					if not self.youtube_installed_check():
+						return self.notification('Youtube Plugin needed for playback')
 					youtube_key = chosen_listitem.getProperty('key_id')
-					if youtube_key: # It was a youtube video but yt-dlp failed
-						self.notification('Could not fetch a direct playable link for this trailer.')
-					else: # It was not a youtube video and not a direct link
-						self.notification('No video link found for this item.')
+					if youtube_key:
+						self.set_current_params(set_starting_position=False)
+						self.window_player_url = youtube_url % youtube_key
+						return window_player(self)
+					else:
+						return self.notification('No video link found for this item.')
 			elif self.control_id in text_list_ids:
 				if self.control_id == parentsguide_id: return self.show_text_media(text=chosen_var)
 				else: return self.select_item(self.control_id, self.show_text_media(text=self.get_attribute(self, chosen_var), current_index=position))
@@ -393,21 +396,15 @@ class Extras(BaseDialog):
 					youtube_key = item.get('key')
 					thumbnail = item.get('thumbnail', '')
 
-					if direct_url and isinstance(direct_url, str) and direct_url.lower().endswith('.mp4'): # Existing direct link (non-YouTube)
+					if direct_url and isinstance(direct_url, str) and direct_url.lower().endswith('.mp4'):
 						listitem.setProperty('is_direct_link', 'true')
 						listitem.setProperty('direct_url', direct_url)
 						listitem.setProperty('thumbnail', thumbnail or get_icon('play'))
-					elif youtube_key: # YouTube video
-						direct_youtube_url = yt_dlp_utils.get_trailer_url(youtube_key) # Attempt to get direct link
-						if direct_youtube_url:
-							listitem.setProperty('is_direct_link', 'true')
-							listitem.setProperty('direct_url', direct_youtube_url)
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key)) # Keep YouTube thumb
-						else: # yt-dlp failed
-							listitem.setProperty('is_direct_link', 'false') # Fallback: will be handled by onClick
-							listitem.setProperty('key_id', youtube_key)
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
-					else: # No direct_url and no youtube_key
+					elif youtube_key:
+						listitem.setProperty('is_direct_link', 'false')
+						listitem.setProperty('key_id', youtube_key)
+						listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
+					else:
 						continue
 					yield listitem
 				except: pass
@@ -608,38 +605,23 @@ class Extras(BaseDialog):
 		return self.show_text_media(text=self.plot)
 
 	def show_trailers(self):
-		trailer_video_info = self.meta_get('trailer') # This might be a URL or just a youtube ID/query
-		if not trailer_video_info:
-			return self.notification('No trailer link found.')
-
-		direct_url_to_play = None
-
-		# Attempt to get direct link using yt-dlp
-		# yt_dlp_utils.get_trailer_url can handle URLs, IDs, or search queries.
-		if isinstance(trailer_video_info, str):
-			direct_url_to_play = yt_dlp_utils.get_trailer_url(trailer_video_info)
-
-		if direct_url_to_play:
+		trailer_url = self.meta_get('trailer')
+		if trailer_url and isinstance(trailer_url, str) and trailer_url.lower().endswith('.mp4'):
+			# It's a direct video link
 			try:
-				import xbmc
+				import xbmc # Try direct import first
 			except ImportError:
-				from modules import kodi_utils
+				from modules import kodi_utils # Fallback to kodi_utils
 				xbmc = kodi_utils.xbmc
-			xbmc.Player().play(direct_url_to_play)
-			return
-		elif trailer_video_info and isinstance(trailer_video_info, str) and trailer_video_info.lower().endswith('.mp4'):
-			# If yt-dlp didn't handle it but it's a direct mp4
-			try:
-				import xbmc
-			except ImportError:
-				from modules import kodi_utils
-				xbmc = kodi_utils.xbmc
-			xbmc.Player().play(trailer_video_info)
+			xbmc.Player().play(trailer_url)
 			return
 		else:
-			# yt-dlp failed or it's not a recognized direct link format
-			self.notification('Could not play trailer. Direct link not found or format not supported.')
-			# Removed fallback to YouTube plugin
+			# Fallback to YouTube playback
+			if not self.youtube_installed_check():
+				return self.notification('Youtube Plugin needed for playback')
+			self.set_current_params(set_starting_position=False)
+			self.window_player_url = trailer_url # Use the already fetched trailer_url
+			return window_player(self)
 
 	def show_images(self):
 		return _images({'mode': 'tmdb_media_image_results', 'media_type': self.media_type, 'tmdb_id': self.tmdb_id, 'rootname': self.rootname})
@@ -878,10 +860,10 @@ class Extras(BaseDialog):
 		else: line2 = separator.join([i for i in (self.get_next_episode(), self.get_last_aired(), self.get_next_aired()) if i])
 		self.set_label(3001, line2)
 
-	# def youtube_installed_check(self): # Removed
-	# 	if not self.addon_installed(youtube_check): return False # Removed
-	# 	if not self.addon_enabled(youtube_check): return False # Removed
-	# 	return True # Removed
+	def youtube_installed_check(self):
+		if not self.addon_installed(youtube_check): return False
+		if not self.addon_enabled(youtube_check): return False
+		return True
 
 	def close_all(self):
 		clear_property('fenlight.window_stack')
