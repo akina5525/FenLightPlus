@@ -52,8 +52,6 @@ ratings_null = ('', '%')
 missing_image_check = ('', None, empty_poster, addon_fanart)
 _images = Images().run
 youtube_thumb_url, youtube_url = 'https://img.youtube.com/vi/%s/0.jpg', 'plugin://plugin.video.youtube/play/?video_id=%s'
-smarttube_package_name = "com.teamsmart.videomanager.tv"
-smarttube_intent_uri = "intent:#Intent;action=android.intent.action.VIEW;package=%s;S.browser_fallback_url=http://youtube.com/watch?v=%s;S.id=%s;S.video_id=%s;end"
 
 class Extras(BaseDialog):
 	def __init__(self, *args, **kwargs):
@@ -131,11 +129,7 @@ class Extras(BaseDialog):
 				return window_manager(self)
 			elif self.control_id == videos_id:
 				chosen_listitem = self.get_listitem(self.control_id)
-				if chosen_listitem.getProperty('is_smarttube_link') == 'true':
-					smarttube_uri = chosen_listitem.getProperty('smarttube_uri')
-					execute_builtin(f'StartAndroidActivity("{smarttube_uri}")')
-					return
-				elif chosen_listitem.getProperty('is_direct_link') == 'true':
+				if chosen_listitem.getProperty('is_direct_link') == 'true':
 					direct_url = chosen_listitem.getProperty('direct_url')
 					if direct_url:
 						try:
@@ -403,7 +397,6 @@ class Extras(BaseDialog):
 	def make_videos(self):
 		if not videos_id in self.enabled_lists: return
 		# Removed youtube_installed_check() from here
-		smarttube_enabled = get_setting('smarttube.enabled') == 'true'
 		# is_android = get_property('System.Platform.Android') == 'true' # Original line, will be overridden by is_android_platform
 		def _sort_trailers(trailers):
 			official_trailers = [i for i in trailers if i.get('official') and i.get('type') == 'Trailer' and 'official trailer' in i.get('name', '').lower()]
@@ -429,17 +422,9 @@ class Extras(BaseDialog):
 						listitem.setProperty('direct_url', direct_url)
 						listitem.setProperty('thumbnail', thumbnail or get_icon('play'))
 					elif youtube_key:
-						# Original conditional logic restored
-						if smarttube_enabled and get_property('System.Platform.Android') == 'true':
-							smarttube_uri = smarttube_intent_uri % (smarttube_package_name, youtube_key, youtube_key, youtube_key)
-							listitem.setProperty('is_smarttube_link', 'true')
-							listitem.setProperty('smarttube_uri', smarttube_uri)
-							listitem.setProperty('key_id', youtube_key) # Fallback for display or if SmartTube fails
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
-						else:
-							listitem.setProperty('is_direct_link', 'false')
-							listitem.setProperty('key_id', youtube_key)
-							listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
+						listitem.setProperty('is_direct_link', 'false')
+						listitem.setProperty('key_id', youtube_key)
+						listitem.setProperty('thumbnail', thumbnail or (youtube_thumb_url % youtube_key))
 					else:
 						# Skip item if it has neither a direct_url nor a youtube_key
 						continue
