@@ -6,6 +6,11 @@ from windows.base_window import BaseDialog, window_manager, window_player, ok_di
 from apis import tmdb_api, imdb_api, omdb_api, trakt_api
 from indexers import dialogs, people
 from indexers.images import Images
+import sys
+import os
+lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if lib_dir not in sys.path:
+    sys.path.insert(0, lib_dir)
 from script.module.rottentomatoesclient.rotten_tomatoes_client.client import RottenTomatoesClient
 from modules import kodi_utils, settings, watched_status
 from modules.settings import get_setting
