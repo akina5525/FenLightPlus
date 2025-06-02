@@ -1,3 +1,6 @@
+[B]Version 2.2.63[/B] - 2025-06-02
+- Roll back yt-dlp
+
 [B]Version 2.2.62[/B] - 2025-06-02
 - manual fix #2
 
