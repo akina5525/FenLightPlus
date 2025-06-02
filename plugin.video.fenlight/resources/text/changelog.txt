@@ -1,3 +1,8 @@
+[B]Version 2.2.65[/B] - 2025-06-02
+- Merge pull request #42 from akina5525/remove-yt-dlp-extras
+
+Refactor: Remove yt-dlp references from extras window
+
 [B]Version 2.2.64[/B] - 2025-06-02
 - Merge pull request #41 from akina5525/fix/remove-extras-logging
 
