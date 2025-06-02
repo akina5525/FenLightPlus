@@ -19,10 +19,16 @@ if lib_dir not in sys.path:
 
 from modules import kodi_utils, settings, watched_status
 
+kodi_utils.log(f"FenLight Extras.py: Running with Python version: {sys.version}", kodi_utils.LOGINFO)
+kodi_utils.log(f"FenLight Extras.py: Python executable: {sys.executable}", kodi_utils.LOGINFO)
+
 # Perform import-time checks for yt-dlp
 try:
-    # yt_dlp is already imported above, this just confirms it was successful
-    # and allows us to set the flags in one try-except block.
+    # yt_dlp is already imported above. This import statement here is more of a confirmation
+    # and to ensure yt_dlp is in the local scope of this try block if it wasn't already.
+    # The primary import is at the top of the file.
+    import yt_dlp # Ensure it's "active" for __file__ attribute
+    kodi_utils.log(f"FenLight Extras.py: yt-dlp module path: {yt_dlp.__file__}", kodi_utils.LOGINFO)
     if sys.version_info < (3, 9):
         YTDLP_PYTHON_VERSION_OK = False
         kodi_utils.log("yt-dlp: Python version is < 3.9. yt-dlp features will be disabled.", kodi_utils.LOGWARNING)
