@@ -629,7 +629,11 @@ class Extras(BaseDialog):
 			# Also instantiating client as requested, though not strictly needed for static methods.
 			_ = RottenTomatoesClient() # Instantiation as requested. Result not used if methods are static.
 
-			search_results = RottenTomatoesClient.search(title=media_title, year=media_year if media_year and media_year != '0' else None)
+			search_term = media_title
+			if media_year and media_year != '0':
+				search_term += f" ({media_year})" # Match the logging format
+			logger('fenlight.extras.show_trailers', f'Constructed search term for Rotten Tomatoes: {search_term}')
+			search_results = RottenTomatoesClient.search(term=search_term, limit=3)
 
 			if search_results and isinstance(search_results, list) and len(search_results) > 0:
 				# Assuming the first result is the most relevant one.
