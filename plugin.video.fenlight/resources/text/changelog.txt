@@ -1,3 +1,8 @@
+[B]Version 2.2.55[/B] - 2025-06-02
+- Merge pull request #36 from akina5525/remove-rottentomatoes
+
+Remove Rotten Tomatoes references from extras window
+
 [B]Version 2.2.54[/B] - 2025-06-02
 - Revert "Here's the plan for adding the rotten_tomatoes_client library:"
 
