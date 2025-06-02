@@ -1,3 +1,8 @@
+[B]Version 2.2.48[/B] - 2025-06-02
+- Merge pull request #30 from akina5525/add-rottentomatoes-client
+
+Here's the plan for adding the rotten_tomatoes_client library:
+
 [B]Version 2.2.47[/B] - 2025-06-01
 - Merge pull request #28 from akina5525/remove-smarttube-option
 
