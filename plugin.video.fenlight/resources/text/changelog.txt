@@ -1,3 +1,8 @@
+[B]Version 2.2.61[/B] - 2025-06-02
+- Merge pull request #40 from akina5525/fix/yt-dlp-python-version
+
+Fix: Handle yt-dlp Python version incompatibility in extras.py
+
 [B]Version 2.2.60[/B] - 2025-06-02
 - yt-dlp manual try
 
