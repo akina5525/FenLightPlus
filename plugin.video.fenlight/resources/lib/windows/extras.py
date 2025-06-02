@@ -11,7 +11,14 @@ import os
 lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
-from script.module.rottentomatoesclient.rotten_tomatoes_client.client import RottenTomatoesClient
+
+# rotten_tomatoes_lib_dir is .../resources/lib/script.module.rottentomatoesclient/
+rotten_tomatoes_lib_dir = os.path.join(lib_dir, 'script.module.rottentomatoesclient')
+if rotten_tomatoes_lib_dir not in sys.path:
+    sys.path.insert(0, rotten_tomatoes_lib_dir)
+
+# Now we can import rotten_tomatoes_client directly
+from rotten_tomatoes_client.client import RottenTomatoesClient
 from modules import kodi_utils, settings, watched_status
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
