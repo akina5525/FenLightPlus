@@ -3,7 +3,7 @@
 
 try:
     # Attempt to import the yt_dlp module from the designated location
-    from ..modules.yt_dlp import yt_dlp
+    from .yt_dlp import yt_dlp
 except ImportError:
     # Fallback for cases where the module structure might be different (e.g., local testing)
     try:
