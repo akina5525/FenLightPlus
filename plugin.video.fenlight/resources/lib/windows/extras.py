@@ -8,32 +8,11 @@ from indexers.images import Images
 import sys
 import os
 
-# Global flags for yt-dlp support and Python version
-YTDLP_SUPPORTED = True
-YTDLP_PYTHON_VERSION_OK = True
-
 lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
 
 from modules import kodi_utils, settings, watched_status
-
-# Perform import-time checks for yt-dlp
-try:
-    # yt_dlp is already imported above. This import statement here is more of a confirmation
-    # and to ensure yt_dlp is in the local scope of this try block if it wasn't already.
-    # The primary import is at the top of the file.
-    import yt_dlp # Ensure it's "active" for __file__ attribute
-    if sys.version_info < (3, 9):
-        YTDLP_PYTHON_VERSION_OK = False
-except ImportError:
-    YTDLP_SUPPORTED = False
-    # This kodi_utils import might fail if kodi_utils itself is not found,
-    # but it's a core module, so we assume it's there if this script runs.
-except Exception as e:
-    # Catch any other unexpected errors during the check
-    YTDLP_SUPPORTED = False # Assume not supported if any error occurs
-    YTDLP_PYTHON_VERSION_OK = False # Also assume version might be an issue or related
 
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
