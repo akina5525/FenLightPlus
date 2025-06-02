@@ -3,9 +3,10 @@ from threading import Thread
 from datetime import datetime, timedelta
 from requests.exceptions import RequestException
 from windows.base_window import BaseDialog, window_manager, window_player, ok_dialog
-from apis import tmdb_api, imdb_api, omdb_api, trakt_api, rotten_tomatoes_client
+from apis import tmdb_api, imdb_api, omdb_api, trakt_api
 from indexers import dialogs, people
 from indexers.images import Images
+from script.module.rottentomatoesclient.rotten_tomatoes_client.client import RottenTomatoesClient
 from modules import kodi_utils, settings, watched_status
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
@@ -602,29 +603,72 @@ class Extras(BaseDialog):
 	def show_trailers(self):
 		rt_trailer_url = None
 		try:
-			logger('fenlight.extras.show_trailers', 'Attempting to fetch trailer URL from Rotten Tomatoes')
-			rt_trailer_url = rotten_tomatoes_client.get_trailer_url(self.meta)
+			logger('fenlight.extras.show_trailers', 'Attempting to fetch trailer from Rotten Tomatoes using new client')
+			# Ensure self.title and self.year are available and not None
+			media_title = self.title or self.meta_get('title')
+			media_year = self.year or str(self.meta_get('year'))
+
+			if not media_title:
+				logger('fenlight.extras.show_trailers', 'Cannot search Rotten Tomatoes, title is missing.')
+				raise ValueError("Title is missing for Rotten Tomatoes search")
+
+			logger('fenlight.extras.show_trailers', 'Searching Rotten Tomatoes for: %s (%s)' % (media_title, media_year))
+			# Assuming search and get_movie_details are static methods as per task description
+			# Also instantiating client as requested, though not strictly needed for static methods.
+			_ = RottenTomatoesClient() # Instantiation as requested. Result not used if methods are static.
+
+			search_results = RottenTomatoesClient.search(title=media_title, year=media_year if media_year and media_year != '0' else None)
+
+			if search_results and isinstance(search_results, list) and len(search_results) > 0:
+				# Assuming the first result is the most relevant one.
+				# And that result dictionary has 'page_url' and 'title', 'year' for logging/verification
+				first_result = search_results[0]
+				page_url = first_result.get('page_url')
+				rt_title = first_result.get('title', 'N/A')
+				rt_year = first_result.get('year', 'N/A')
+				logger('fenlight.extras.show_trailers', 'Found RT search result: %s (%s) with URL: %s' % (rt_title, rt_year, page_url))
+
+				if page_url:
+					logger('fenlight.extras.show_trailers', 'Fetching movie details from: %s' % page_url)
+					movie_details = RottenTomatoesClient.get_movie_details(page_url)
+					if movie_details and isinstance(movie_details, dict):
+						# Assumption: Trailer URL is in 'trailer_url' or 'trailer'. Prioritize a direct playable URL.
+						# This key 'trailer_url' is an assumption based on common practices.
+						# It might be under a different key like 'videos', 'main_trailer', etc.
+						rt_trailer_url = movie_details.get('trailer_url') or movie_details.get('trailer')
+						if rt_trailer_url:
+							logger('fenlight.extras.show_trailers', 'Extracted trailer URL from movie details: %s' % rt_trailer_url)
+						else:
+							logger('fenlight.extras.show_trailers', 'No trailer URL key found in movie_details response.')
+					else:
+						logger('fenlight.extras.show_trailers', 'Failed to get valid movie details or details format unexpected.')
+				else:
+					logger('fenlight.extras.show_trailers', 'No page_url found in Rotten Tomatoes search result.')
+			else:
+				logger('fenlight.extras.show_trailers', 'No results found on Rotten Tomatoes for: %s (%s)' % (media_title, media_year))
+
 		except RequestException as e:
 			logger('fenlight.extras.show_trailers', 'Rotten Tomatoes API request failed (network error): %s' % str(e))
+		except ValueError as e: # Catch specific ValueError for missing title
+			logger('fenlight.extras.show_trailers', 'ValueError during RT trailer search: %s' % str(e))
 		except Exception as e:
-			logger('fenlight.extras.show_trailers', 'Error fetching trailer URL from Rotten Tomatoes (general error): %s' % str(e))
+			logger('fenlight.extras.show_trailers', 'Error during Rotten Tomatoes trailer processing (general error): %s' % str(e))
 
 		if rt_trailer_url:
 			logger('fenlight.extras.show_trailers', 'Rotten Tomatoes trailer found: %s' % rt_trailer_url)
 			try:
 				logger('fenlight.extras.show_trailers', 'Attempting to play Rotten Tomatoes trailer')
-				# Ensure xbmc is available for playback
 				try:
-					import xbmc # Try direct import first
+					import xbmc
 				except ImportError:
-					from modules import kodi_utils # Fallback to kodi_utils
+					from modules import kodi_utils
 					xbmc = kodi_utils.xbmc
 				xbmc.Player().play(rt_trailer_url)
 				return # Successfully played Rotten Tomatoes trailer
 			except Exception as e:
 				logger('fenlight.extras.show_trailers', 'Error playing Rotten Tomatoes trailer: %s' % str(e))
 		else:
-			logger('fenlight.extras.show_trailers', 'No Rotten Tomatoes trailer URL found or error during fetch.')
+			logger('fenlight.extras.show_trailers', 'No Rotten Tomatoes trailer URL ultimately found or an error occurred.')
 
 		# Fallback to existing logic
 		logger('fenlight.extras.show_trailers', 'Falling back to YouTube/Direct link for trailer')
