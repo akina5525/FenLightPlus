@@ -39,6 +39,11 @@ def get_trailer_url(video_url_or_search_query):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             # If it's not a URL, yt-dlp will use default_search
             info_dict = ydl.extract_info(video_url_or_search_query, download=False)
+            print(f"yt_dlp_utils: info_dict raw keys: {list(info_dict.keys()) if isinstance(info_dict, dict) else 'Not a dict'}")
+            if isinstance(info_dict, dict) and 'entries' in info_dict:
+                print(f"yt_dlp_utils: info_dict has 'entries', count: {len(info_dict['entries'])}")
+                if info_dict['entries']:
+                    print(f"yt_dlp_utils: First entry keys: {list(info_dict['entries'][0].keys()) if isinstance(info_dict['entries'][0], dict) else 'Not a dict'}")
 
             # If search is used, info_dict will contain a list of entries
             if 'entries' in info_dict and info_dict['entries']:
@@ -47,6 +52,7 @@ def get_trailer_url(video_url_or_search_query):
             elif 'url' in info_dict: # Direct URL was provided
                 video_info = info_dict
             else: # No URL and no entries found (e.g. invalid direct URL or no search results)
+                print(f"yt_dlp_utils: Debug: No video found. info_dict was: {info_dict}")
                 print(f"No video found for '{video_url_or_search_query}'.")
                 return None
 
@@ -61,18 +67,20 @@ def get_trailer_url(video_url_or_search_query):
                 }
                 with yt_dlp.YoutubeDL(nested_ydl_opts) as nested_ydl:
                     video_info = nested_ydl.extract_info(f"https://www.youtube.com/watch?v={video_info['id']}", download=False)
+                    print(f"yt_dlp_utils: nested video_info keys: {list(video_info.keys()) if isinstance(video_info, dict) else 'Not a dict'}")
 
             if 'url' in video_info:
                 return video_info['url']
             else:
+                print(f"yt_dlp_utils: Debug: Could not extract direct URL. video_info was: {video_info}")
                 print(f"Could not extract direct video URL for '{video_url_or_search_query}'.")
                 return None
 
     except yt_dlp.utils.DownloadError as e:
-        print(f"yt-dlp download error: {e}")
+        print(f"yt_dlp_utils: yt-dlp download error: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"yt_dlp_utils: An unexpected error occurred: {e}")
         return None
 
 if __name__ == '__main__':
