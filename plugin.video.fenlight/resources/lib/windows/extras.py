@@ -11,13 +11,6 @@ lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
 
-# rotten_tomatoes_lib_dir is .../resources/lib/script.module.rottentomatoesclient/
-rotten_tomatoes_lib_dir = os.path.join(lib_dir, 'script.module.rottentomatoesclient')
-if rotten_tomatoes_lib_dir not in sys.path:
-    sys.path.insert(0, rotten_tomatoes_lib_dir)
-
-# Now we can import rotten_tomatoes_client directly
-from rotten_tomatoes_client.client import RottenTomatoesClient
 from modules import kodi_utils, settings, watched_status
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
@@ -60,7 +53,7 @@ open_folder_list_ids = (in_lists_id,)
 finished_tvshow = ('', 'Ended', 'Canceled')
 parentsguide_icons = {'Sex & Nudity': get_icon('sex_nudity'), 'Violence & Gore': get_icon('genre_war'), 'Profanity': get_icon('bad_language'),
 						'Alcohol, Drugs & Smoking': get_icon('drugs_alcohol'), 'Frightening & Intense Scenes': get_icon('genre_horror')}
-meta_ratings_values = (('metascore', 1), ('tomatometer', 2), ('tomatousermeter', 3), ('imdb', 4), ('tmdb', 5))
+meta_ratings_values = (('metascore', 1), ('imdb', 4), ('tmdb', 5))
 ratings_null = ('', '%')
 missing_image_check = ('', None, empty_poster, addon_fanart)
 _images = Images().run
