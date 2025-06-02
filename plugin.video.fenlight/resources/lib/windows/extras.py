@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
 from datetime import datetime, timedelta
+from requests.exceptions import RequestException
 from windows.base_window import BaseDialog, window_manager, window_player, ok_dialog
-from apis import tmdb_api, imdb_api, omdb_api, trakt_api
+from apis import tmdb_api, imdb_api, omdb_api, trakt_api, rotten_tomatoes_client
 from indexers import dialogs, people
 from indexers.images import Images
 from modules import kodi_utils, settings, watched_status
@@ -13,7 +14,7 @@ from modules.utils import change_image_resolution, adjust_premiered_date, get_da
 from modules.meta_lists import networks, movie_genres, tvshow_genres
 from modules.metadata import movieset_meta, episodes_meta, movie_meta, tvshow_meta
 from modules.episode_tools import EpisodeTools
-# logger = kodi_utils.logger # Commented out as no specific logger calls will remain after this subtask for this file.
+logger = kodi_utils.logger
 
 get_icon, close_all_dialog = kodi_utils.get_icon, kodi_utils.close_all_dialog
 addon_fanart, empty_poster = kodi_utils.addon_fanart(), kodi_utils.empty_poster
@@ -599,9 +600,38 @@ class Extras(BaseDialog):
 		return self.show_text_media(text=self.plot)
 
 	def show_trailers(self):
+		rt_trailer_url = None
+		try:
+			logger('fenlight.extras.show_trailers', 'Attempting to fetch trailer URL from Rotten Tomatoes')
+			rt_trailer_url = rotten_tomatoes_client.get_trailer_url(self.meta)
+		except RequestException as e:
+			logger('fenlight.extras.show_trailers', 'Rotten Tomatoes API request failed (network error): %s' % str(e))
+		except Exception as e:
+			logger('fenlight.extras.show_trailers', 'Error fetching trailer URL from Rotten Tomatoes (general error): %s' % str(e))
+
+		if rt_trailer_url:
+			logger('fenlight.extras.show_trailers', 'Rotten Tomatoes trailer found: %s' % rt_trailer_url)
+			try:
+				logger('fenlight.extras.show_trailers', 'Attempting to play Rotten Tomatoes trailer')
+				# Ensure xbmc is available for playback
+				try:
+					import xbmc # Try direct import first
+				except ImportError:
+					from modules import kodi_utils # Fallback to kodi_utils
+					xbmc = kodi_utils.xbmc
+				xbmc.Player().play(rt_trailer_url)
+				return # Successfully played Rotten Tomatoes trailer
+			except Exception as e:
+				logger('fenlight.extras.show_trailers', 'Error playing Rotten Tomatoes trailer: %s' % str(e))
+		else:
+			logger('fenlight.extras.show_trailers', 'No Rotten Tomatoes trailer URL found or error during fetch.')
+
+		# Fallback to existing logic
+		logger('fenlight.extras.show_trailers', 'Falling back to YouTube/Direct link for trailer')
 		trailer_url = self.meta_get('trailer')
 		if trailer_url and isinstance(trailer_url, str) and trailer_url.lower().endswith('.mp4'):
 			# It's a direct video link
+			logger('fenlight.extras.show_trailers', 'Playing direct MP4 trailer: %s' % trailer_url)
 			try:
 				import xbmc # Try direct import first
 			except ImportError:
@@ -611,7 +641,9 @@ class Extras(BaseDialog):
 			return
 		else:
 			# Fallback to YouTube playback
+			logger('fenlight.extras.show_trailers', 'Attempting YouTube playback for trailer: %s' % trailer_url)
 			if not self.youtube_installed_check():
+				logger('fenlight.extras.show_trailers', 'YouTube plugin not installed or enabled.')
 				return self.notification('Youtube Plugin needed for playback')
 			self.set_current_params(set_starting_position=False)
 			self.window_player_url = trailer_url # Use the already fetched trailer_url
