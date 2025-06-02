@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.54[/B][/COLOR]
+- Revert "Here's the plan for adding the rotten_tomatoes_client library:"
+
+This reverts commit 87f18638a7f7552704bd90ddcf5b161bcadbeb84.
+
 [COLOR dodgerblue][B]Version 2.2.53[/B][/COLOR]
 - Merge pull request #35 from akina5525/fix/rottentomatoes-trailer-search
 
