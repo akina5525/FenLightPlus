@@ -1,3 +1,8 @@
+[B]Version 2.2.53[/B] - 2025-06-02
+- Merge pull request #35 from akina5525/fix/rottentomatoes-trailer-search
+
+Fix: Correct Rotten Tomatoes client search call
+
 [B]Version 2.2.52[/B] - 2025-06-02
 - Merge pull request #34 from akina5525/fix-rottentomatoes-import
 

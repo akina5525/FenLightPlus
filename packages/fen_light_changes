@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.53[/B][/COLOR]
+- Merge pull request #35 from akina5525/fix/rottentomatoes-trailer-search
+
+Fix: Correct Rotten Tomatoes client search call
+
 [COLOR dodgerblue][B]Version 2.2.52[/B][/COLOR]
 - Merge pull request #34 from akina5525/fix-rottentomatoes-import
 
