@@ -1,3 +1,8 @@
+[B]Version 2.2.49[/B] - 2025-06-02
+- Merge pull request #31 from akina5525/feat/rotten-tomatoes-trailer
+
+Integrate Rotten Tomatoes client for trailer playback
+
 [B]Version 2.2.48[/B] - 2025-06-02
 - Merge pull request #30 from akina5525/add-rottentomatoes-client
 
