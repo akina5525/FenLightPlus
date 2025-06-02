@@ -1,3 +1,8 @@
+[B]Version 2.2.57[/B] - 2025-06-02
+- Merge pull request #38 from akina5525/feature/yt-dlp-trailer-integration
+
+fix: Correct relative import for yt-dlp module
+
 [B]Version 2.2.56[/B] - 2025-06-02
 - Merge pull request #37 from akina5525/feature/yt-dlp-trailer-integration
 
