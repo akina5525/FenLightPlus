@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.56[/B][/COLOR]
+- Merge pull request #37 from akina5525/feature/yt-dlp-trailer-integration
+
+feat: Integrate yt-dlp for trailer playback
+
 [COLOR dodgerblue][B]Version 2.2.55[/B][/COLOR]
 - Merge pull request #36 from akina5525/remove-rottentomatoes
 

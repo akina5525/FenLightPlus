@@ -1,3 +1,8 @@
+[B]Version 2.2.56[/B] - 2025-06-02
+- Merge pull request #37 from akina5525/feature/yt-dlp-trailer-integration
+
+feat: Integrate yt-dlp for trailer playback
+
 [B]Version 2.2.55[/B] - 2025-06-02
 - Merge pull request #36 from akina5525/remove-rottentomatoes
 
