@@ -8,11 +8,35 @@ from indexers.images import Images
 import yt_dlp
 import sys
 import os
+
+# Global flags for yt-dlp support and Python version
+YTDLP_SUPPORTED = True
+YTDLP_PYTHON_VERSION_OK = True
+
 lib_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
 
 from modules import kodi_utils, settings, watched_status
+
+# Perform import-time checks for yt-dlp
+try:
+    # yt_dlp is already imported above, this just confirms it was successful
+    # and allows us to set the flags in one try-except block.
+    if sys.version_info < (3, 9):
+        YTDLP_PYTHON_VERSION_OK = False
+        kodi_utils.log("yt-dlp: Python version is < 3.9. yt-dlp features will be disabled.", kodi_utils.LOGWARNING)
+except ImportError:
+    YTDLP_SUPPORTED = False
+    # This kodi_utils import might fail if kodi_utils itself is not found,
+    # but it's a core module, so we assume it's there if this script runs.
+    kodi_utils.log("yt-dlp: Library not found. yt-dlp features will be disabled.", kodi_utils.LOGWARNING)
+except Exception as e:
+    # Catch any other unexpected errors during the check
+    YTDLP_SUPPORTED = False # Assume not supported if any error occurs
+    YTDLP_PYTHON_VERSION_OK = False # Also assume version might be an issue or related
+    kodi_utils.log(f"yt-dlp: Unexpected error during import/version check: {e}. yt-dlp features will be disabled.", kodi_utils.LOGWARNING)
+
 from modules.settings import get_setting
 from modules.kodi_utils import execute_builtin, get_property
 from modules.sources import Sources
@@ -390,6 +414,12 @@ class Extras(BaseDialog):
 					# Case 1: item['url'] is a YouTube link
 					if video_url and ('youtube.com/watch?v=' in video_url or 'youtu.be/' in video_url):
 						try:
+							if not YTDLP_SUPPORTED:
+								# Logging done at import time
+								continue
+							if not YTDLP_PYTHON_VERSION_OK:
+								# Logging done at import time
+								continue
 							ydl_opts = {'format': 'best', 'noplaylist': True, 'extract_flat': 'in_playlist'}
 							with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 								info = ydl.extract_info(video_url, download=False)
@@ -410,6 +440,12 @@ class Extras(BaseDialog):
 						key_is_url = 'youtube.com/watch?v=' in youtube_key or 'youtu.be/' in youtube_key
 						url_to_process = youtube_key if key_is_url else f"https://www.youtube.com/watch?v={youtube_key}"
 						try:
+							if not YTDLP_SUPPORTED:
+								# Logging done at import time
+								continue
+							if not YTDLP_PYTHON_VERSION_OK:
+								# Logging done at import time
+								continue
 							ydl_opts = {'format': 'best', 'noplaylist': True, 'extract_flat': 'in_playlist'}
 							with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 								info = ydl.extract_info(url_to_process, download=False)
@@ -650,6 +686,12 @@ class Extras(BaseDialog):
 		elif trailer_url and ('youtube.com/watch?v=' in trailer_url or 'youtu.be/' in trailer_url):
 			# YouTube link, resolve with yt-dlp
 			try:
+				if not YTDLP_SUPPORTED:
+					self.notification('yt-dlp library not found. Trailer playback via yt-dlp is unavailable.')
+					return
+				if not YTDLP_PYTHON_VERSION_OK:
+					self.notification('Playing trailers with yt-dlp requires Python 3.9+. Your version is older.')
+					return
 				ydl_opts = {'format': 'best', 'noplaylist': True, 'extract_flat': 'in_playlist'}
 				with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 					info = ydl.extract_info(trailer_url, download=False)
