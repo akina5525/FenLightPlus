@@ -1,3 +1,8 @@
+[COLOR dodgerblue][B]Version 2.2.58[/B][/COLOR]
+- Merge pull request #39 from akina5525/feature/yt-dlp-trailer-integration
+
+feat: Enhance logging in yt_dlp_utils
+
 [COLOR dodgerblue][B]Version 2.2.57[/B][/COLOR]
 - Merge pull request #38 from akina5525/feature/yt-dlp-trailer-integration
 
