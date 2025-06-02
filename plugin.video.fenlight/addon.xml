@@ -3,7 +3,6 @@
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.requests" version="2.2.20"/>
-        <import addon="script.module.rottentomatoesclient" version="0.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="resources/lib/fenlight.py">
         <provides>video</provides>
